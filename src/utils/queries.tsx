@@ -75,8 +75,6 @@ export const useTestSnippet = () => {
   )
 }
 
-
-
 export const useGetFormatRules = () => {
   return useQuery<Rule[], Error>('formatRules', () => snippetOperations.getFormatRules());
 }
@@ -103,4 +101,16 @@ export const useDeleteSnippet = ({onSuccess}: {onSuccess: () => void}) => {
 
 export const useGetFileTypes = () => {
   return useQuery<FileType[], Error>('fileTypes', () => snippetOperations.getFileTypes());
+}
+
+
+export type ExecutionResult = {
+  outputs: string[],
+  errors: string[]
+}
+
+export const useExecuteSnippet = () => {
+    return useMutation<ExecutionResult, Error, string>(
+        snippet => snippetOperations.executeSnippet(snippet, "")
+    );
 }

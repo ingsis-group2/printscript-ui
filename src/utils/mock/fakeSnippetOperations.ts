@@ -4,10 +4,12 @@ import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from '../snipp
 import autoBind from 'auto-bind'
 import {PaginatedUsers} from "../users.ts";
 import {TestCase} from "../../types/TestCase.ts";
-import {TestCaseResult} from "../queries.tsx";
+import {ExecutionResult, TestCaseResult} from "../queries.tsx";
 import {FileType} from "../../types/FileType.ts";
-
+import axios from 'axios'
 const DELAY: number = 1000
+
+const BASE_URL = 'http://localhost:8080'
 
 export class FakeSnippetOperations implements SnippetOperations {
   private readonly fakeStore = new FakeSnippetStore()
@@ -112,5 +114,21 @@ export class FakeSnippetOperations implements SnippetOperations {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.getFileTypes()), DELAY)
     })
+  }
+
+  async executeSnippet(snippetId: string, language: string, version: string): Promise<ExecutionResult> {
+    const payload = {
+      snippetId: 1,
+      language,
+      version
+    };
+    console.log('Executing snippet:', payload);
+    try {
+      const response = await axios.post(`${BASE_URL}/execute`, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Error executing snippet:', error);
+      throw error;
+    }
   }
 }

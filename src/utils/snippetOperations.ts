@@ -2,7 +2,7 @@ import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from './snippe
 import {PaginatedUsers} from "./users.ts";
 import {Rule} from "./mock/fakeSnippetStore.ts";
 import {TestCase} from "../types/TestCase.ts";
-import {TestCaseResult} from "./queries.tsx";
+import {ExecutionResult, TestCaseResult} from "./queries.tsx";
 import {FileType} from "../types/FileType.ts";
 
 export interface SnippetOperations {
@@ -35,4 +35,6 @@ export interface SnippetOperations {
   testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult>
 
   getFileTypes(): Promise<FileType[]>
+
+  executeSnippet(snippetId: string, language: string, version: string): Promise<ExecutionResult>
 }
