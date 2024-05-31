@@ -2,6 +2,7 @@ import {AppBar, Box, Button, Container, Toolbar, Typography} from "@mui/material
 import {Code, Rule} from "@mui/icons-material";
 import {ReactNode} from "react";
 import {useLocation} from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
 type PageType = {
     title: string;
@@ -20,6 +21,7 @@ const pages: PageType[] = [{
 }];
 
 export const Navbar = () => {
+    const {loginWithRedirect, logout, isAuthenticated, user} = useAuth0();
     const location = useLocation();
     return (
         <AppBar position="static" elevation={0}>
@@ -59,6 +61,16 @@ export const Navbar = () => {
                                 <Typography>{page.title}</Typography>
                             </Button>
                         ))}
+                    </Box>
+                    <Box sx={{display: {xs: 'none', md: 'flex'}, gap: '24px', alignItems: 'center'}}>
+                    {isAuthenticated ? (
+                        <>
+                            <Typography sx={{color: 'white'}}>{user?.name}</Typography>
+                            <Button sx={{color: 'white'}} onClick={() => logout()}>Logout</Button>
+                        </>
+                    ) : (
+                        <Button sx={{color: 'white'}} onClick={() => loginWithRedirect()}>Login</Button>
+                    )}
                     </Box>
                 </Toolbar>
             </Container>
