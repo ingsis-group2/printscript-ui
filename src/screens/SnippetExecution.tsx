@@ -1,40 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { OutlinedInput, Box, Typography } from "@mui/material";
+import {OutlinedInput, Box} from "@mui/material";
 import { highlight, languages } from "prismjs";
 import Editor from "react-simple-code-editor";
 import { Snippet } from "../utils/snippet.ts";
-import { ExecutionResult } from "../utils/queries.tsx";
-import {FakeSnippetOperations} from "../utils/mock/fakeSnippetOperations.ts";
-
-const snippetOperations = new FakeSnippetOperations();
+import { useExecuteSnippet } from "../utils/queries.tsx";
 
 export const SnippetExecution = ({ snippet, run }: { snippet?: Snippet; run: boolean }) => {
     const [input, setInput] = useState("");
     const [output, setOutput] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false);
+    const { mutate: executeSnippet, isLoading: loading, data: executionResult} = useExecuteSnippet();
+
+    useEffect(() => {
+        if (executionResult) {
+            setOutput(prevOutput => [...prevOutput, ...executionResult.outputs]);
+            if (executionResult.errors.length) {
+                console.error("Errors:", executionResult.errors);
+            }
+        }
+    }, [executionResult]);
 
     useEffect(() => {
         if (run && snippet) {
-            executeSnippet(snippet.id);
+            executeSnippet({ snippetId: snippet.id, language: snippet.language, version: "1.0", input: "" });
         }
-    }, [run, snippet]);
-
-    const executeSnippet = async (snippetId: string) => {
-        setLoading(true);
-        try {
-            const result: ExecutionResult = await snippetOperations.executeSnippet(snippetId, "PrintScript", "1.0");
-            setOutput(result.outputs);
-        } catch (error) {
-            console.error("Error executing snippet:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
+    }, [run, snippet, executeSnippet]);
 
     const handleEnter = (event: React.KeyboardEvent) => {
         if (event.key === "Enter" && !loading) {
             setOutput([...output, input]);
-            // send input to runner
+            executeSnippet({ snippetId: snippet?.id ?? "1", language: "PrintScript", version: "1.0", input });
             setInput("");
         }
     };
@@ -56,7 +50,13 @@ export const SnippetExecution = ({ snippet, run }: { snippet?: Snippet; run: boo
                     }}
                 />
             </Box>
-            <OutlinedInput onKeyDown={handleEnter} value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type here" fullWidth />
+            <OutlinedInput
+                onKeyDown={handleEnter}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type here"
+                fullWidth
+            />
         </>
     );
 }

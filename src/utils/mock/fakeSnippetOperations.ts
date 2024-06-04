@@ -74,12 +74,6 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  formatSnippet(snippetContent: string): Promise<string> {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(this.fakeStore.formatSnippet(snippetContent)), DELAY)
-    })
-  }
-
   getTestCases(): Promise<TestCase[]> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.getTestCases()), DELAY)
@@ -116,19 +110,26 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  async executeSnippet(snippetId: string, language: string, version: string): Promise<ExecutionResult> {
+  async executeSnippet(snippetId: string, language: string, version: string, input: string): Promise<ExecutionResult> {
     const payload = {
-      snippetId: 1,
+      snippetId,
       language,
-      version
+      version,
+      //input
     };
-    console.log('Executing snippet:', payload);
-    try {
-      const response = await axios.post(`${BASE_URL}/execute`, payload);
-      return response.data;
-    } catch (error) {
-      console.error('Error executing snippet:', error);
-      throw error;
+    const response = await axios.post(`${BASE_URL}/execute`, payload);
+    return response.data;
     }
+
+  async formatSnippet(snippetContent: string): Promise<string> {
+    const payload = {
+        snippetId: 1,
+        language: "PrintScript",
+        version: "1.0",
+        };
+    console.log(payload)
+    const response = await axios.post(`${BASE_URL}/format`, payload);
+    console.log(response)
+    return response.data;
   }
 }

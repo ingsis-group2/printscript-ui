@@ -36,5 +36,5 @@ export interface SnippetOperations {
 
   getFileTypes(): Promise<FileType[]>
 
-  executeSnippet(snippetId: string, language: string, version: string): Promise<ExecutionResult>
+  executeSnippet(snippetId: string, language: string, version: string, input: string): Promise<ExecutionResult>
 }

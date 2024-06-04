@@ -110,7 +110,7 @@ export type ExecutionResult = {
 }
 
 export const useExecuteSnippet = () => {
-    return useMutation<ExecutionResult, Error, string>(
-        snippet => snippetOperations.executeSnippet(snippet, "")
-    );
+  return useMutation<ExecutionResult, Error, { snippetId: string; language: string; version: string; input: string }>(
+      ({ snippetId, language, version, input }) => snippetOperations.executeSnippet(snippetId, language, version, input)
+  );
 }
