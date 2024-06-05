@@ -125,6 +125,7 @@ export class FakeSnippetOperations implements SnippetOperations {
   }
 
   async executeSnippet(snippetId: string, language: string, version: string, input: string): Promise<ExecutionResult> {
+    console.log(snippetId, language, version, input)
     const payload = {
       snippetId,
       language,
@@ -136,6 +137,7 @@ export class FakeSnippetOperations implements SnippetOperations {
     }
 
   async formatSnippet(snippetContent: string): Promise<string> {
+    console.log(snippetContent)
     const payload = {
         snippetId: 1,
         language: "PrintScript",
