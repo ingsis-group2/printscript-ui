@@ -1,7 +1,6 @@
 import {AppBar, Box, Button, Container, Toolbar, Typography} from "@mui/material";
 import {Code, Rule} from "@mui/icons-material";
 import {ReactNode} from "react";
-import {useLocation} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 import {useLocation, useNavigate} from "react-router-dom";
 

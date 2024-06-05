@@ -8,10 +8,10 @@ import {ExecutionResult, TestCaseResult} from "../queries.tsx";
 import {FileType} from "../../types/FileType.ts";
 import axios from 'axios'
 import {Rule} from "../../types/Rule.ts";
+import { BACKEND_URL} from "../constants.ts";
 
 const DELAY: number = 1000
 
-const BASE_URL = 'http://localhost:8080'
 
 export class FakeSnippetOperations implements SnippetOperations {
   private readonly fakeStore = new FakeSnippetStore()
@@ -131,7 +131,7 @@ export class FakeSnippetOperations implements SnippetOperations {
       version,
       //input
     };
-    const response = await axios.post(`${BASE_URL}/execute`, payload);
+    const response = await axios.post(`${BACKEND_URL}/execute`, payload);
     return response.data;
     }
 
@@ -142,7 +142,7 @@ export class FakeSnippetOperations implements SnippetOperations {
         version: "1.0",
         };
     console.log(payload)
-    const response = await axios.post(`${BASE_URL}/format`, payload);
+    const response = await axios.post(`${BACKEND_URL}/format`, payload);
     console.log(response)
     return response.data;
   }
