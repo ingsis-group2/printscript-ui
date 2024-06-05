@@ -1,29 +1,15 @@
 import React, { useState, useEffect } from "react";
-import {OutlinedInput, Box} from "@mui/material";
-import { highlight, languages } from "prismjs";
+import {OutlinedInput} from "@mui/material";
+import {highlight, languages} from "prismjs";
 import Editor from "react-simple-code-editor";
-import { Snippet } from "../utils/snippet.ts";
 import { useExecuteSnippet } from "../utils/queries.tsx";
 
-export const SnippetExecution = ({ snippet, run }: { snippet?: Snippet; run: boolean }) => {
-    const [input, setInput] = useState("");
-    const [output, setOutput] = useState<string[]>([]);
-    const { mutate: executeSnippet, isLoading: loading, data: executionResult} = useExecuteSnippet();
+export const SnippetExecution = () => {
+  // Here you should provide all the logic to connect to your sockets.
+  const [input, setInput] = useState<string>("")
+  const [output, setOutput] = useState<string[]>([]);
+  const { mutate: executeSnippet, isLoading: loading, data: executionResult} = useExecuteSnippet();
 
-    useEffect(() => {
-        if (executionResult) {
-            setOutput(prevOutput => [...prevOutput, ...executionResult.outputs]);
-            if (executionResult.errors.length) {
-                console.error("Errors:", executionResult.errors);
-            }
-        }
-    }, [executionResult]);
-
-    useEffect(() => {
-        if (run && snippet) {
-            executeSnippet({ snippetId: snippet.id, language: snippet.language, version: "1.0", input: "" });
-        }
-    }, [run, snippet, executeSnippet]);
 
     const handleEnter = (event: React.KeyboardEvent) => {
         if (event.key === "Enter" && !loading) {

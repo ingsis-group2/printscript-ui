@@ -3,6 +3,7 @@ import {Code, Rule} from "@mui/icons-material";
 import {ReactNode} from "react";
 import {useLocation} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
+import {useLocation, useNavigate} from "react-router-dom";
 
 type PageType = {
     title: string;
@@ -23,6 +24,7 @@ const pages: PageType[] = [{
 export const Navbar = () => {
     const {loginWithRedirect, logout, isAuthenticated, user} = useAuth0();
     const location = useLocation();
+    const navigate = useNavigate();
     return (
         <AppBar position="static" elevation={0}>
             <Container maxWidth="xl">
@@ -44,7 +46,7 @@ export const Navbar = () => {
                         {pages.map((page) => (
                             <Button
                                 key={page.title}
-                                href={page.path}
+                                onClick={() => navigate(`${page.path}`)}
                                 sx={{
                                     my: 2,
                                     color: 'white',

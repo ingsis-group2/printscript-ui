@@ -1,9 +1,9 @@
 import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from './snippet'
 import {PaginatedUsers} from "./users.ts";
-import {Rule} from "./mock/fakeSnippetStore.ts";
 import {TestCase} from "../types/TestCase.ts";
 import {ExecutionResult, TestCaseResult} from "./queries.tsx";
 import {FileType} from "../types/FileType.ts";
+import {Rule} from "../types/Rule.ts";
 
 export interface SnippetOperations {
   listSnippetDescriptors(page: number,pageSize: number,sippetName?: string): Promise<PaginatedSnippets>
@@ -35,6 +35,10 @@ export interface SnippetOperations {
   testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult>
 
   getFileTypes(): Promise<FileType[]>
+
+  modifyFormatRule(newRules: Rule[]): Promise<Rule[]>
+
+  modifyLintingRule(newRules: Rule[]): Promise<Rule[]>
 
   executeSnippet(snippetId: string, language: string, version: string, input: string): Promise<ExecutionResult>
 }

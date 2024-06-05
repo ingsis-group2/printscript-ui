@@ -1,5 +1,5 @@
 import {SnippetOperations} from '../snippetOperations'
-import {FakeSnippetStore, Rule} from './fakeSnippetStore'
+import {FakeSnippetStore} from './fakeSnippetStore'
 import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from '../snippet'
 import autoBind from 'auto-bind'
 import {PaginatedUsers} from "../users.ts";
@@ -7,6 +7,8 @@ import {TestCase} from "../../types/TestCase.ts";
 import {ExecutionResult, TestCaseResult} from "../queries.tsx";
 import {FileType} from "../../types/FileType.ts";
 import axios from 'axios'
+import {Rule} from "../../types/Rule.ts";
+
 const DELAY: number = 1000
 
 const BASE_URL = 'http://localhost:8080'
@@ -107,6 +109,18 @@ export class FakeSnippetOperations implements SnippetOperations {
   getFileTypes(): Promise<FileType[]> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.getFileTypes()), DELAY)
+    })
+  }
+
+  modifyFormatRule(newRules: Rule[]): Promise<Rule[]> {
+    return new Promise(resolve => {
+      setTimeout(() => resolve(this.fakeStore.modifyFormattingRule(newRules)), DELAY)
+    })
+  }
+
+  modifyLintingRule(newRules: Rule[]): Promise<Rule[]> {
+    return new Promise(resolve => {
+      setTimeout(() => resolve(this.fakeStore.modifyLintingRule(newRules)), DELAY)
     })
   }
 
