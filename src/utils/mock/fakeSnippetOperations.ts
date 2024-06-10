@@ -8,7 +8,7 @@ import {ExecutionResult, TestCaseResult} from "../queries.tsx";
 import {FileType} from "../../types/FileType.ts";
 import axios from 'axios'
 import {Rule} from "../../types/Rule.ts";
-import { BACKEND_URL} from "../constants.ts";
+import {SNIPPET_RUNNER_URL} from "../constants.ts";
 
 const DELAY: number = 1000
 
@@ -132,7 +132,7 @@ export class FakeSnippetOperations implements SnippetOperations {
       version,
       //input
     };
-    const response = await axios.post(`${BACKEND_URL}/execute`, payload);
+    const response = await axios.post(`${SNIPPET_RUNNER_URL}/execute`, payload);
     return response.data;
     }
 
@@ -144,7 +144,7 @@ export class FakeSnippetOperations implements SnippetOperations {
         version: "1.0",
         };
     console.log(payload)
-    const response = await axios.post(`${BACKEND_URL}/format`, payload);
+    const response = await axios.post(`${SNIPPET_RUNNER_URL}/format`, payload);
     console.log(response)
     return response.data;
   }
