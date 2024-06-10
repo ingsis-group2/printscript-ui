@@ -6,9 +6,15 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
     define: {
-      'process.env.FRONTEND_URL': JSON.stringify(env.FRONTEND_URL),
-      'process.env.BACKEND_URL': JSON.stringify(env.BACKEND_URL)
+      'process.env.VITE_FRONTEND_URL': JSON.stringify(env.VITE_FRONTEND_URL),
+      'process.env.VITE_BACKEND_URL': JSON.stringify(env.VITE_BACKEND_URL),
+      'process.env.VITE_REACT_APP_AUTH0_DOMAIN': JSON.stringify(env.VITE_REACT_APP_AUTH0_DOMAIN),
+      'process.env.VITE_REACT_APP_AUTH0_CLIENT_ID': JSON.stringify(env.VITE_REACT_APP_AUTH0_CLIENT_ID)
     },
     plugins: [react()],
+    preview: {
+      host: true,
+      port: 5173,
+    }
   }
 })

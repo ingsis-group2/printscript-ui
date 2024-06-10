@@ -1,0 +1,27 @@
+FROM node:22-alpine as BUILD_IMAGE
+WORKDIR /app/printscript-ui
+COPY package.json .
+RUN npm install
+
+COPY . .
+
+ARG VITE_FRONTEND_URL
+ARG VITE_BACKEND_URL
+ARG VITE_REACT_APP_AUTH0_DOMAIN
+ARG VITE_REACT_APP_AUTH0_CLIENT_ID
+
+ENV VITE_FRONTEND_URL=$VITE_FRONTEND_URL
+ENV VITE_BACKEND_URL=$VITE_BACKEND_URL
+ENV VITE_REACT_APP_AUTH0_DOMAIN=$VITE_REACT_APP_AUTH0_DOMAIN
+ENV VITE_REACT_APP_AUTH0_CLIENT_ID=$VITE_REACT_APP_AUTH0_CLIENT_ID
+
+
+RUN npm run build
+FROM node:22-alpine as PRODUCTION_IMAGE
+WORKDIR /app/printscript-ui
+COPY --from=BUILD_IMAGE /app/printscript-ui/dist /app/printscript-ui/dist
+EXPOSE 5173
+COPY package.json .
+COPY vite.config.ts .
+RUN npm install typescript
+CMD ["npm", "run", "preview"]
