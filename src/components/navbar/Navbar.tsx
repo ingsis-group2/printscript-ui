@@ -3,6 +3,7 @@ import {Code, Rule} from "@mui/icons-material";
 import {ReactNode} from "react";
 import {useAuth0} from "@auth0/auth0-react";
 import {useLocation, useNavigate} from "react-router-dom";
+import {AUTH0_CLIENT_ID, AUTH0_DOMAIN, SNIPPET_OPERATIONS_URL} from "../../utils/constants.ts";
 
 type PageType = {
     title: string;
@@ -24,6 +25,9 @@ export const Navbar = () => {
     const {loginWithRedirect, logout, isAuthenticated, user} = useAuth0();
     const location = useLocation();
     const navigate = useNavigate();
+
+    console.log(SNIPPET_OPERATIONS_URL, SNIPPET_OPERATIONS_URL, AUTH0_DOMAIN, AUTH0_CLIENT_ID);
+
     return (
         <AppBar position="static" elevation={0}>
             <Container maxWidth="xl">
