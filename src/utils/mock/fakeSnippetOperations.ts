@@ -124,13 +124,13 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  async executeSnippet(snippetId: string, language: string, version: string, input: string): Promise<ExecutionResult> {
-    console.log(snippetId, language, version, input)
+  async executeSnippet(snippetId: string, language: string, version: string, inputs: string[]): Promise<ExecutionResult> {
+    console.log(snippetId, language, version, inputs)
     const payload = {
       snippetId,
       language,
       version,
-      //input
+      inputs
     };
     const response = await axios.post(`${SNIPPET_RUNNER_URL}/execute`, payload);
     return response.data;
@@ -142,6 +142,7 @@ export class FakeSnippetOperations implements SnippetOperations {
         snippetId: 1,
         language: "PrintScript",
         version: "1.0",
+        inputs: []
         };
     console.log(payload)
     const response = await axios.post(`${SNIPPET_RUNNER_URL}/format`, payload);

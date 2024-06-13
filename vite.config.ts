@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_AUTH0_PASSWORD': JSON.stringify(env.AUTH0_PASSWORD),
       'import.meta.env.VITE_AUTH0_DOMAIN': JSON.stringify(env.AUTH0_DOMAIN),
       'import.meta.env.VITE_AUTH0_CLIENT_ID': JSON.stringify(env.AUTH0_CLIENT_ID),
+      'import.meta.env.VITE_AUTH0_AUDIENCE': JSON.stringify(env.AUTH0_AUDIENCE),
     },
     plugins: [react()],
     preview: {

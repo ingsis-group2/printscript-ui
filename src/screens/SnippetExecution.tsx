@@ -1,43 +1,47 @@
-import React, {useEffect, useState} from "react";
-import {Box, OutlinedInput} from "@mui/material";
-import {highlight, languages} from "prismjs";
+import React, { useEffect, useState } from "react";
+import { Box, OutlinedInput } from "@mui/material";
+import { highlight, languages } from "prismjs";
 import Editor from "react-simple-code-editor";
 import { useExecuteSnippet } from "../utils/queries.tsx";
-import {Snippet} from "../utils/snippet.ts";
+import { Snippet } from "../utils/snippet.ts";
 
-export const SnippetExecution = ({runSnippet, snippet} : { runSnippet: boolean, snippet?: Snippet }) => {
-  // Here you should provide all the logic to connect to your sockets.
-  const [input, setInput] = useState<string>("")
-  const [output, setOutput] = useState<string[]>([]);
-  const { mutate: executeSnippet, isLoading: loading, data: executionResult} = useExecuteSnippet();
+export const SnippetExecution = ({ runSnippet, snippet } : { runSnippet: boolean, snippet?: Snippet }) => {
+    const [input, setInput] = useState<string>("");
+    const [inputs, setInputs] = useState<string[]>([]);
+    const [output, setOutput] = useState<string[]>([]);
+    const { mutate: executeSnippet, isLoading: loading, data: executionResult } = useExecuteSnippet();
 
+    useEffect(() => {
+        if (executionResult) {
+            setOutput(prevOutput => [...prevOutput, ...executionResult.outputs]);
+            if (executionResult.errors.length) {
+                console.error("Errors:", executionResult.errors);
+            }
+        }
+    }, [executionResult]);
 
-  // This is the logic to append the output to the screen
-  useEffect(() => {
-      if (executionResult) {
-          setOutput(prevOutput => [...prevOutput, ...executionResult.outputs]);
-          if (executionResult.errors.length) {
-              console.error("Errors:", executionResult.errors);
-          }
-      }
-  }, [executionResult]);
+    useEffect(() => {
+        if (runSnippet && snippet) {
+            executeSnippet({ snippetId: snippet.id, language: snippet.language, version: snippet.version, inputs });
+        }
+    }, [runSnippet, snippet, executeSnippet, inputs]);
 
-  // This is the logic to run the snippet
-  useEffect(() => {
-      if (runSnippet && snippet) {
-          executeSnippet({ snippetId: snippet.id, language: snippet.language, version: "1.0", input: "" });
-      }
-  }, [runSnippet, snippet, executeSnippet]);
+    const handleEnter = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter" && !loading) {
+            setInputs(prevInputs => [...prevInputs, input]);
+            setInput("");
+        }
+    };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput(e.target.value);
+    };
 
-  // Function to read the input and execute the snippet
-  const handleEnter = (event: React.KeyboardEvent) => {
-      if (event.key === "Enter" && !loading) {
-          setOutput([...output, input]);
-          executeSnippet({ snippetId: snippet?.id ?? "1", language: "PrintScript", version: "1.0", input });
-          setInput("");
-      }
-  };
+    useEffect(() => {
+        if (!loading && inputs.length > 0 && snippet) {
+            executeSnippet({ snippetId: snippet.id, language: snippet.language, version: snippet.version, inputs });
+        }
+    }, [inputs, executeSnippet, snippet]);
 
     const code = output.join("\n");
 
@@ -46,8 +50,8 @@ export const SnippetExecution = ({runSnippet, snippet} : { runSnippet: boolean, 
             <Box flex={1} overflow={"none"} minHeight={200} bgcolor={'black'} color={'white'}>
                 <Editor
                     value={code}
+                    onValueChange={() => {}}
                     padding={10}
-                    onValueChange={(code) => setInput(code)}
                     highlight={(code) => highlight(code, languages.js, 'javascript')}
                     maxLength={1000}
                     style={{
@@ -59,7 +63,7 @@ export const SnippetExecution = ({runSnippet, snippet} : { runSnippet: boolean, 
             <OutlinedInput
                 onKeyDown={handleEnter}
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={handleInputChange}
                 placeholder="Type here"
                 fullWidth
             />

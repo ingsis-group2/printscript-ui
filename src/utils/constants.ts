@@ -5,4 +5,5 @@ export const AUTH0_USERNAME = import.meta.env.VITE_AUTH0_USERNAME || "";
 export const AUTH0_PASSWORD = import.meta.env.VITE_AUTH0_PASSWORD || "";
 export const AUTH0_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN || "";
 export const AUTH0_CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID || "";
+export const AUTH0_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE || "";
 

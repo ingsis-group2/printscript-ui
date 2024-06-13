@@ -14,7 +14,8 @@ const INITIAL_SNIPPETS: Snippet[] = [
     compliance: 'pending',
     author: 'John Doe',
     language: 'printscript',
-    extension: 'prs'
+    extension: 'prs',
+    version: '1.1'
   },
   {
     id: '2',
@@ -23,7 +24,8 @@ const INITIAL_SNIPPETS: Snippet[] = [
     compliance: 'not-compliant',
     author: 'John Doe',
     language: 'printscript',
-    extension: 'prs'
+    extension: 'prs',
+    version: '1.1'
   },
   {
     id: '3',
@@ -32,7 +34,8 @@ const INITIAL_SNIPPETS: Snippet[] = [
     compliance: 'compliant',
     author: 'John Doe',
     language: 'printscript',
-    extension: 'prs'
+    extension: 'prs',
+    version: '1.1'
   }
 ]
 

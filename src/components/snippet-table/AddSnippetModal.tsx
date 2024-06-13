@@ -31,6 +31,7 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
     const [language, setLanguage] = useState(defaultSnippet?.language ?? "printscript");
     const [code, setCode] = useState(defaultSnippet?.content ?? "");
     const [snippetName, setSnippetName] = useState(defaultSnippet?.name ?? "")
+    const [version, setVersion] = useState("1.0")
     const {mutateAsync: createSnippet, isLoading: loadingSnippet} = useCreateSnippet({
         onSuccess: () => queryClient.invalidateQueries('listSnippets')
     })
@@ -41,7 +42,8 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
             name: snippetName,
             content: code,
             language: language,
-            extension: fileTypes?.find((f) => f.language === language)?.extension ?? "prs"
+            extension: fileTypes?.find((f) => f.language === language)?.extension ?? "prs",
+            version: version
         }
         await createSnippet(newSnippet);
         onClose();
@@ -52,6 +54,7 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
             setCode(defaultSnippet?.content)
             setLanguage(defaultSnippet?.language)
             setSnippetName(defaultSnippet?.name)
+            setVersion(defaultSnippet?.version)
         }
     }, [defaultSnippet]);
 
@@ -75,12 +78,17 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
             }
             <Box sx={{
                 display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+            }}>
+            <Box sx={{
+                display: 'flex',
                 flexDirection: 'column',
                 gap: '16px'
             }}>
                 <InputLabel htmlFor="name">Name</InputLabel>
                 <Input onChange={e => setSnippetName(e.target.value)} value={snippetName} id="name"
-                       sx={{width: '50%'}}/>
+                       />
             </Box>
             <Box sx={{
                 display: 'flex',
@@ -94,7 +102,6 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
                     value={language}
                     label="Age"
                     onChange={(e: SelectChangeEvent<string>) => setLanguage(e.target.value)}
-                    sx={{width: '50%'}}
                 >
                     {
                         fileTypes?.map(x => (
@@ -104,6 +111,15 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
                     }
                 </Select>
             </Box>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px'
+            }}>
+                <InputLabel htmlFor="name">Version</InputLabel>
+                <Input onChange={e => setVersion(e.target.value)} value={version} id="name"/>
+            </Box>
+    </Box>
             <InputLabel>Code Snippet</InputLabel>
             <Box width={"100%"} sx={{
                 backgroundColor: 'black', color: 'white', borderRadius: "8px",
