@@ -5,7 +5,7 @@ import Editor from "react-simple-code-editor";
 import { useExecuteSnippet } from "../utils/queries.tsx";
 import { Snippet } from "../utils/snippet.ts";
 
-export const SnippetExecution = ({ runSnippet, snippet } : { runSnippet: boolean, snippet?: Snippet }) => {
+export const SnippetExecution = ({ runSnippet, snippet, version } : { runSnippet: boolean, snippet?: Snippet, version: string }) => {
     const [input, setInput] = useState<string>("");
     const [inputs, setInputs] = useState<string[]>([]);
     const [output, setOutput] = useState<string[]>([]);
@@ -13,7 +13,7 @@ export const SnippetExecution = ({ runSnippet, snippet } : { runSnippet: boolean
 
     useEffect(() => {
         if (executionResult) {
-            setOutput(prevOutput => [...prevOutput, ...executionResult.outputs]);
+            setOutput(executionResult.outputs);
             if (executionResult.errors.length) {
                 console.error("Errors:", executionResult.errors);
             }
@@ -22,7 +22,7 @@ export const SnippetExecution = ({ runSnippet, snippet } : { runSnippet: boolean
 
     useEffect(() => {
         if (runSnippet && snippet) {
-            executeSnippet({ snippetId: snippet.id, language: snippet.language, version: snippet.version, inputs });
+            executeSnippet({ snippetId: snippet.id, version: version, inputs });
         }
     }, [runSnippet, snippet, executeSnippet, inputs]);
 
@@ -39,7 +39,7 @@ export const SnippetExecution = ({ runSnippet, snippet } : { runSnippet: boolean
 
     useEffect(() => {
         if (!loading && inputs.length > 0 && snippet) {
-            executeSnippet({ snippetId: snippet.id, language: snippet.language, version: snippet.version, inputs });
+            executeSnippet({ snippetId: snippet.id, version: version, inputs });
         }
     }, [inputs, executeSnippet, snippet]);
 

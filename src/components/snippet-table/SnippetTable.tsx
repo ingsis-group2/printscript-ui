@@ -23,7 +23,7 @@ import {useSnackbarContext} from "../../contexts/snackbarContext.tsx";
 import {useGetFileTypes} from "../../utils/queries.tsx";
 
 type SnippetTableProps = {
-  handleClickSnippet: (id: string) => void;
+  handleClickSnippet: (id: number) => void;
   snippets?: Snippet[];
   loading: boolean;
   handleSearchSnippet: (snippetName: string) => void;

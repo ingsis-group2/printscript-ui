@@ -4,13 +4,36 @@ import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from '../snipp
 import autoBind from 'auto-bind'
 import {PaginatedUsers} from "../users.ts";
 import {TestCase} from "../../types/TestCase.ts";
-import {ExecutionResult, TestCaseResult} from "../queries.tsx";
+import {ExecutionResult, FormatterOutput, TestCaseResult} from "../queries.tsx";
 import {FileType} from "../../types/FileType.ts";
 import axios from 'axios'
 import {Rule} from "../../types/Rule.ts";
-import {SNIPPET_RUNNER_URL} from "../constants.ts";
+import {SNIPPET_RUNNER_URL, SNIPPET_OPERATIONS_URL} from "../constants.ts";
 
 const DELAY: number = 1000
+
+// Retrieve the token from localStorage
+const token = localStorage.getItem("@@auth0spajs@@::MChgRhyd44fZZMqSWXHMNDtfgT4Vs7KV::https://snippet-security::openid profile email");
+let access_token = '';
+
+if (token) {
+  const tokenObj = JSON.parse(token);
+  access_token = tokenObj.body.access_token;
+  console.log(access_token);
+}
+
+// Set up Axios interceptor to add Authorization header to all requests
+axios.interceptors.request.use(
+    config => {
+      if (access_token) {
+        config.headers.Authorization = `Bearer ${access_token}`;
+      }
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
+    }
+);
 
 
 export class FakeSnippetOperations implements SnippetOperations {
@@ -20,13 +43,9 @@ export class FakeSnippetOperations implements SnippetOperations {
     autoBind(this)
   }
 
-  createSnippet(createSnippet: CreateSnippet): Promise<Snippet> {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(this.fakeStore.createSnippet(createSnippet)), DELAY)
-    })
-  }
 
-  getSnippetById(id: string): Promise<Snippet | undefined> {
+
+  getSnippetById(id: number): Promise<Snippet | undefined> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.getSnippetById(id)), DELAY)
     })
@@ -45,19 +64,14 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  updateSnippetById(id: string, updateSnippet: UpdateSnippet): Promise<Snippet> {
+  updateSnippetById(id: number, updateSnippet: UpdateSnippet): Promise<Snippet> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.updateSnippet(id, updateSnippet)), DELAY)
     })
   }
 
-  getUserFriends(name: string = "", page: number = 1, pageSize: number = 10): Promise<PaginatedUsers> {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(this.fakeStore.getUserFriends(name,page,pageSize)), DELAY)
-    })
-  }
 
-  shareSnippet(snippetId: string): Promise<Snippet> {
+  shareSnippet(snippetId: number): Promise<Snippet> {
     return new Promise(resolve => {
       // @ts-expect-error, it will always find it in the fake store
       setTimeout(() => resolve(this.fakeStore.getSnippetById(snippetId)), DELAY)
@@ -88,7 +102,7 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  removeTestCase(id: string): Promise<string> {
+  removeTestCase(id: number): Promise<number> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.removeTestCase(id)), DELAY)
     })
@@ -100,7 +114,7 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  deleteSnippet(id: string): Promise<string> {
+  deleteSnippet(id: number): Promise<number> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.deleteSnippet(id)), DELAY)
     })
@@ -124,29 +138,69 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  async executeSnippet(snippetId: string, language: string, version: string, inputs: string[]): Promise<ExecutionResult> {
-    console.log(snippetId, language, version, inputs)
-    const payload = {
-      snippetId,
-      language,
-      version,
-      inputs
-    };
-    const response = await axios.post(`${SNIPPET_RUNNER_URL}/execute`, payload);
-    return response.data;
+  async executeSnippet(snippetId: number, version: string, inputs: string[]): Promise<ExecutionResult> {
+    try {
+      console.log(snippetId, version, inputs)
+      const payload = {
+        snippetId: snippetId,
+        version,
+        inputs
+      };
+      const response = await axios.post(`${SNIPPET_RUNNER_URL}/execute`, payload, {
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error executing snippet:", error);
+      throw error;
     }
+  }
 
-  async formatSnippet(snippetContent: string): Promise<string> {
-    console.log(snippetContent)
-    const payload = {
-        snippetId: 1,
-        language: "PrintScript",
-        version: "1.0",
+  async formatSnippet(snippetId: number, version: string): Promise<FormatterOutput> {
+    try {
+      const payload = {
+        snippetId: snippetId,
+        version,
         inputs: []
-        };
-    console.log(payload)
-    const response = await axios.post(`${SNIPPET_RUNNER_URL}/format`, payload);
-    console.log(response)
-    return response.data;
+      };
+      const response = await axios.post(`${SNIPPET_RUNNER_URL}/format`, payload);
+      console.log(response)
+      return response.data;
+    } catch (error) {
+      console.error("Error formatting snippet:", error);
+      throw error;
+    }
+  }
+
+  async createSnippet(createSnippet: CreateSnippet): Promise<Snippet> {
+    try {
+      const response = await axios.post(`${SNIPPET_OPERATIONS_URL}`, createSnippet)
+      console.log(response)
+      return {
+        id: response.data.id,
+        name: response.data.name,
+        language: response.data.language,
+        extension: response.data.extension,
+        content: response.data.content,
+        author: response.data.writer,
+        compliance: 'compliant'
+      }
+    } catch (error) {
+      console.error("Error creating snippet:", error);
+      throw error;
+    }
+  }
+
+
+  async getUsers(page: number, pageSize: number): Promise<PaginatedUsers> {
+    try {
+      // Fetch users from Auth0
+      // const response = await axios.get(`https://dev-77ie0xuayhhodlbg.us.auth0.com/api/v2/users`, {
+      // });
+      // return response.data;
+    } catch (error) {
+      console.error("Error getting users:", error);
+      throw error;
+    }
   }
 }
+

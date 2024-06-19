@@ -13,7 +13,7 @@ export const useGetSnippets = (page: number = 0, pageSize: number = 10, snippetN
   return useQuery<PaginatedSnippets, Error>(['listSnippets', page,pageSize,snippetName], () => snippetOperations.listSnippetDescriptors(page, pageSize,snippetName));
 };
 
-export const useGetSnippetById = (id: string) => {
+export const useGetSnippetById = (id: number) => {
   return useQuery<Snippet | undefined, Error>(['snippet', id], () => snippetOperations.getSnippetById(id), {
     enabled: !!id, // This query will not execute until the id is provided
   });
@@ -24,22 +24,19 @@ export const useCreateSnippet = ({onSuccess}: {onSuccess: () => void}): UseMutat
 };
 
 export const useUpdateSnippetById = ({onSuccess}: {onSuccess: () => void}): UseMutationResult<Snippet, Error, {
-  id: string;
+  id: number;
   updateSnippet: UpdateSnippet
 }> => {
-  return useMutation<Snippet, Error, { id: string; updateSnippet: UpdateSnippet }>(
+  return useMutation<Snippet, Error, { id: number; updateSnippet: UpdateSnippet }>(
       ({id, updateSnippet}) => snippetOperations.updateSnippetById(id, updateSnippet),{
         onSuccess,
     }
   );
 };
 
-export const useGetUsers = (name: string = "", page: number = 0, pageSize: number = 10) => {
-  return useQuery<PaginatedUsers, Error>(['users',name,page,pageSize], () => snippetOperations.getUserFriends(name,page, pageSize));
-};
 
 export const useShareSnippet = () => {
-  return useMutation<Snippet, Error, { snippetId: string; userId: string }>(
+  return useMutation<Snippet, Error, { snippetId: number; userId: string }>(
       ({snippetId, userId}) => snippetOperations.shareSnippet(snippetId, userId)
   );
 };
@@ -58,7 +55,7 @@ export const usePostTestCase = () => {
 
 
 export const useRemoveTestCase = ({onSuccess}: {onSuccess: () => void}) => {
-  return useMutation<string, Error, string>(
+  return useMutation<number, Error, number>(
       ['removeTestCase'],
       (id) => snippetOperations.removeTestCase(id),
       {
@@ -99,14 +96,9 @@ export const useModifyLintingRules = ({onSuccess}: {onSuccess: () => void}) => {
   );
 }
 
-export const useFormatSnippet = () => {
-  return useMutation<string, Error, string>(
-      snippetContent => snippetOperations.formatSnippet(snippetContent)
-  );
-}
 
 export const useDeleteSnippet = ({onSuccess}: {onSuccess: () => void}) => {
-  return useMutation<string, Error, string>(
+  return useMutation<number, Error, number>(
       id => snippetOperations.deleteSnippet(id),
       {
         onSuccess,
@@ -126,7 +118,22 @@ export type ExecutionResult = {
 }
 
 export const useExecuteSnippet = () => {
-  return useMutation<ExecutionResult, Error, { snippetId: string; language: string; version: string; inputs: string[] }>(
-      ({ snippetId, language, version, inputs }) => snippetOperations.executeSnippet(snippetId, language, version, inputs)
+  return useMutation<ExecutionResult, Error, { snippetId: number; version: string; inputs: string[] }>(
+      ({ snippetId, version, inputs }) => snippetOperations.executeSnippet(snippetId, version, inputs)
   );
 }
+
+export type FormatterOutput = {
+  formattedCode: string
+  errors: string[]
+}
+
+export const useFormatSnippet = () => {
+  return useMutation<FormatterOutput, Error, { snippetId: number; version: string }>(
+      ({ snippetId, version }) => snippetOperations.formatSnippet(snippetId, version)
+  );
+}
+
+export const useGetUsers = (page: number = 0, pageSize: number = 10) => {
+  return useQuery<PaginatedUsers, Error>(['users',name,page,pageSize], () => snippetOperations.getUsers(page, pageSize));
+};

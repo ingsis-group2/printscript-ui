@@ -1,5 +1,4 @@
-import {ComplianceEnum, CreateSnippet, Snippet, UpdateSnippet} from '../snippet'
-import {v4 as uuid} from 'uuid'
+import {Snippet, UpdateSnippet} from '../snippet'
 import {PaginatedUsers} from "../users.ts";
 import {TestCase} from "../../types/TestCase.ts";
 import {TestCaseResult} from "../queries.tsx";
@@ -8,34 +7,49 @@ import {Rule} from "../../types/Rule.ts";
 
 const INITIAL_SNIPPETS: Snippet[] = [
   {
-    id: '1',
+    id: 1,
     name: 'Super Snippet',
-    content: 'let a : number = 5;\nlet b : number = 5;\n\nprintln(a + b);',
+    content: 'println(  \'Hello World!\');',
     compliance: 'pending',
     author: 'John Doe',
     language: 'printscript',
     extension: 'prs',
-    version: '1.1'
   },
   {
-    id: '2',
+    id: 2,
     name: 'Extra cool Snippet',
-    content: 'let a : number = 5;\nlet b : number = 5;\n\nprintln(a + b);',
+    content: 'let a: number = 1;\nlet b: number = 2;\nlet c: number = a + b;\nprintln(c);',
     compliance: 'not-compliant',
     author: 'John Doe',
     language: 'printscript',
     extension: 'prs',
-    version: '1.1'
   },
   {
-    id: '3',
+    id: 3,
     name: 'Boaring Snippet',
-    content: 'let a : number = 5;\nlet b : number = 5;\n\nprintln(a + b);',
+    content: 'let snake_Case_Variable: string = \'Hello\';\nprintln(snake_Case_Variable + 1);',
     compliance: 'compliant',
     author: 'John Doe',
     language: 'printscript',
     extension: 'prs',
-    version: '1.1'
+  },
+  {
+    id: 5,
+    name: 'Boaring Snippet',
+    content: 'const value = 1; println(  value + 2  );',
+    compliance: 'compliant',
+    author: 'John Doe',
+    language: 'printscript',
+    extension: 'prs',
+  },
+  {
+    id: 6,
+    name: 'ReadInput',
+    content: 'let a: number = readInput(\"Enter a number: \");\nprintln(\'Number is: \' + a);',
+    compliance: 'compliant',
+    author: 'John Doe',
+    language: 'printscript',
+    extension: 'prs',
   }
 ]
 
@@ -128,13 +142,13 @@ const INITIAL_LINTING_RULES: Rule[] = [
 
 const fakeTestCases: TestCase[] = [
   {
-    id: uuid(),
+    id: 1,
     name: "Test Case 1",
     input: ["A", "B"],
     output: ["C", "D"]
   },
   {
-    id: uuid(),
+    id: 2,
     name: "Test Case 2",
     input: ["E", "F"],
     output: ["G", "H"]
@@ -161,8 +175,8 @@ const fileTypes: FileType[] = [
 ]
 
 export class FakeSnippetStore {
-  private readonly snippetMap: Map<string, Snippet> = new Map()
-  private readonly testCaseMap: Map<string, TestCase> = new Map()
+  private readonly snippetMap: Map<number, Snippet> = new Map()
+  private readonly testCaseMap: Map<number, TestCase> = new Map()
   private formattingRules: Rule[] = [];
   private lintingRules: Rule[] = [];
 
@@ -182,24 +196,11 @@ export class FakeSnippetStore {
     return Array.from(this.snippetMap, ([, value]) => value)
   }
 
-  createSnippet(createSnippet: CreateSnippet): Snippet {
-    const id = uuid();
-    const newSnippet = {
-      id,
-      compliance: 'compliant' as ComplianceEnum,
-      author: 'yo',
-      ...createSnippet
-    }
-    this.snippetMap.set(id, newSnippet)
-
-    return newSnippet
-  }
-
-  getSnippetById(id: string): Snippet | undefined {
+  getSnippetById(id: number): Snippet | undefined {
     return this.snippetMap.get(id)
   }
 
-  updateSnippet(id: string, updateSnippet: UpdateSnippet): Snippet {
+  updateSnippet(id: number, updateSnippet: UpdateSnippet): Snippet {
     const existingSnippet = this.snippetMap.get(id)
 
     if (existingSnippet === undefined)
@@ -240,18 +241,18 @@ export class FakeSnippetStore {
   }
 
   postTestCase(testCase: Partial<TestCase>): TestCase {
-    const id = testCase.id ?? uuid()
+    const id = testCase.id ?? 1
     const newTestCase = {...testCase, id} as TestCase
     this.testCaseMap.set(id,newTestCase)
     return newTestCase
   }
 
-  removeTestCase(id: string): string {
+  removeTestCase(id: number): number {
     this.testCaseMap.delete(id)
     return id
   }
 
-  deleteSnippet(id: string): string {
+  deleteSnippet(id: number): number {
     this.snippetMap.delete(id)
     return id
   }

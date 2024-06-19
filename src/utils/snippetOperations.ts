@@ -1,22 +1,20 @@
 import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from './snippet'
 import {PaginatedUsers} from "./users.ts";
 import {TestCase} from "../types/TestCase.ts";
-import {ExecutionResult, TestCaseResult} from "./queries.tsx";
+import {ExecutionResult, FormatterOutput, TestCaseResult} from "./queries.tsx";
 import {FileType} from "../types/FileType.ts";
 import {Rule} from "../types/Rule.ts";
 
 export interface SnippetOperations {
   listSnippetDescriptors(page: number,pageSize: number,sippetName?: string): Promise<PaginatedSnippets>
 
-  createSnippet(createSnippet: CreateSnippet): Promise<Snippet>
+  getSnippetById(id: number): Promise<Snippet | undefined>
 
-  getSnippetById(id: string): Promise<Snippet | undefined>
+  updateSnippetById(id: number, updateSnippet: UpdateSnippet): Promise<Snippet>
 
-  updateSnippetById(id: string, updateSnippet: UpdateSnippet): Promise<Snippet>
+  getUsers(page: number, pageSize: number): Promise<PaginatedUsers>
 
-  getUserFriends(name?: string,page?: number,pageSize?: number): Promise<PaginatedUsers>
-
-  shareSnippet(snippetId: string,userId: string): Promise<Snippet>
+  shareSnippet(snippetId: number,userId: string): Promise<Snippet>
 
   getFormatRules(): Promise<Rule[]>
 
@@ -24,13 +22,11 @@ export interface SnippetOperations {
 
   getTestCases(): Promise<TestCase[]>
 
-  formatSnippet(snippet: string): Promise<string>
-
   postTestCase(testCase: Partial<TestCase>): Promise<TestCase>
 
-  removeTestCase(id: string): Promise<string>
+  removeTestCase(id: number): Promise<number>
 
-  deleteSnippet(id: string): Promise<string>
+  deleteSnippet(id: number): Promise<number>
 
   testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult>
 
@@ -40,5 +36,11 @@ export interface SnippetOperations {
 
   modifyLintingRule(newRules: Rule[]): Promise<Rule[]>
 
-  executeSnippet(snippetId: string, language: string, version: string, inputs: string[]): Promise<ExecutionResult>
+  //done
+  executeSnippet(snippetId: number, version: string, inputs: string[]): Promise<ExecutionResult>
+
+  formatSnippet(snippetId: number, version: string): Promise<FormatterOutput>
+
+  createSnippet(createSnippet: CreateSnippet): Promise<Snippet>
+
 }
