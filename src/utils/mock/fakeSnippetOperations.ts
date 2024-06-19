@@ -193,10 +193,20 @@ export class FakeSnippetOperations implements SnippetOperations {
 
   async getUsers(page: number, pageSize: number): Promise<PaginatedUsers> {
     try {
+      console.log(page, pageSize)
       // Fetch users from Auth0
       // const response = await axios.get(`https://dev-77ie0xuayhhodlbg.us.auth0.com/api/v2/users`, {
       // });
-      // return response.data;
+      return {
+        page: page,
+        page_size: pageSize,
+        count: 20,
+        users: [
+          {
+            id: '1',
+            name: 'User 1',
+            }]
+      }
     } catch (error) {
       console.error("Error getting users:", error);
       throw error;

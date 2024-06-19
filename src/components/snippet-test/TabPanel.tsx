@@ -9,7 +9,7 @@ type TabPanelProps = {
     value: number;
     test?: TestCase;
     setTestCase: (test: Partial<TestCase>) => void;
-    removeTestCase?: (testIndex: string) => void;
+    removeTestCase?: (testIndex: number) => void;
 }
 
 export const TabPanel = ({value, index, test: initialTest, setTestCase, removeTestCase}: TabPanelProps) => {
@@ -90,7 +90,7 @@ export const TabPanel = ({value, index, test: initialTest, setTestCase, removeTe
                     <Box display="flex" flexDirection="row" gap={1}>
                         {
                             (testData?.id && removeTestCase) && (
-                            <Button onClick={() => removeTestCase(testData?.id ?? "")} variant={"outlined"} color={"error"}
+                            <Button onClick={() => removeTestCase(testData?.id ?? 0)} variant={"outlined"} color={"error"}
                                     startIcon={<Delete/>}>
                                 Remove
                             </Button>)

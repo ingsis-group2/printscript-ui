@@ -13,7 +13,7 @@ type ShareSnippetModalProps = {
 export const ShareSnippetModal = (props: ShareSnippetModalProps) => {
   const {open, onClose, onShare, loading} = props
   const [name, setName] = useState("")
-  const [debouncedName, setDebouncedName] = useState("")
+  const [, setDebouncedName] = useState("")
   const {data, isLoading} = useGetUsers(1, 5)
   const [selectedUser, setSelectedUser] = useState<User | undefined>()
 
