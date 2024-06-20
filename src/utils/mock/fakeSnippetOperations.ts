@@ -138,11 +138,11 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  async executeSnippet(snippetId: number, version: string, inputs: string[]): Promise<ExecutionResult> {
+  async executeSnippet(content: string, version: string, inputs: string[]): Promise<ExecutionResult> {
     try {
-      console.log(snippetId, version, inputs)
+      console.log(content, version, inputs)
       const payload = {
-        snippetId: snippetId,
+        content,
         version,
         inputs
       };
@@ -155,12 +155,19 @@ export class FakeSnippetOperations implements SnippetOperations {
     }
   }
 
-  async formatSnippet(snippetId: number, version: string): Promise<FormatterOutput> {
+  async formatSnippet(content: string, version: string): Promise<FormatterOutput> {
     try {
       const payload = {
-        snippetId: snippetId,
+        content,
         version,
-        inputs: []
+        formatRules: {
+          "colonBefore": false,
+          "colonAfter": false,
+          "assignationBefore": false,
+          "assignationAfter": false,
+          "printJump": 1,
+          "ifIndentation": 2
+        }
       };
       const response = await axios.post(`${SNIPPET_RUNNER_URL}/format`, payload);
       console.log(response)

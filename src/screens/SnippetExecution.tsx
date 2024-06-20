@@ -22,7 +22,7 @@ export const SnippetExecution = ({ runSnippet, snippet, version } : { runSnippet
 
     useEffect(() => {
         if (runSnippet && snippet) {
-            executeSnippet({ snippetId: snippet.id, version: version, inputs });
+            executeSnippet({ content: snippet.content, version: version, inputs });
         }
     }, [runSnippet, snippet, executeSnippet, inputs]);
 
@@ -39,7 +39,7 @@ export const SnippetExecution = ({ runSnippet, snippet, version } : { runSnippet
 
     useEffect(() => {
         if (!loading && inputs.length > 0 && snippet) {
-            executeSnippet({ snippetId: snippet.id, version: version, inputs });
+            executeSnippet({ content: snippet.content, version: version, inputs });
         }
     }, [inputs, executeSnippet, snippet]);
 

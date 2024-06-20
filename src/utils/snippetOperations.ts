@@ -37,9 +37,9 @@ export interface SnippetOperations {
   modifyLintingRule(newRules: Rule[]): Promise<Rule[]>
 
   //done
-  executeSnippet(snippetId: number, version: string, inputs: string[]): Promise<ExecutionResult>
+  executeSnippet(content: string, version: string, inputs: string[]): Promise<ExecutionResult>
 
-  formatSnippet(snippetId: number, version: string): Promise<FormatterOutput>
+  formatSnippet(content: string, version: string): Promise<FormatterOutput>
 
   createSnippet(createSnippet: CreateSnippet): Promise<Snippet>
 

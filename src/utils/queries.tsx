@@ -118,8 +118,8 @@ export type ExecutionResult = {
 }
 
 export const useExecuteSnippet = () => {
-  return useMutation<ExecutionResult, Error, { snippetId: number; version: string; inputs: string[] }>(
-      ({ snippetId, version, inputs }) => snippetOperations.executeSnippet(snippetId, version, inputs)
+  return useMutation<ExecutionResult, Error, { content: string; version: string; inputs: string[] }>(
+      ({ content, version, inputs }) => snippetOperations.executeSnippet(content, version, inputs)
   );
 }
 
@@ -129,8 +129,8 @@ export type FormatterOutput = {
 }
 
 export const useFormatSnippet = () => {
-  return useMutation<FormatterOutput, Error, { snippetId: number; version: string }>(
-      ({ snippetId, version }) => snippetOperations.formatSnippet(snippetId, version)
+  return useMutation<FormatterOutput, Error, { content: string; version: string }>(
+      ({ content, version }) => snippetOperations.formatSnippet(content, version)
   );
 }
 

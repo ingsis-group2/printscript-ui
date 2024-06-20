@@ -84,60 +84,70 @@ const paginatedUsers: PaginatedUsers = {
 const INITIAL_FORMATTING_RULES: Rule[] = [
   {
     id: '1',
-    name: "indentation",
-    isActive: true,
-    value: 3
+    name: "colon before",
+    codeName: "colonBefore",
+    isActive: false,
+    value: null
   },
   {
     id: '2',
-    name: "open-if-block-on-same-line",
+    name: "colon after",
+    codeName: "colonAfter",
     isActive: false,
+    value: null
   },
   {
     id: '3',
-    name: "max-line-length",
-    isActive: true,
-    value: 100
+    name: "assignation before",
+    codeName: "assignationBefore",
+    isActive: false,
+    value: null
   },
   {
     id: '4',
-    name: "no-trailing-spaces",
+    name: "assignation after",
+    codeName: "assignationAfter",
     isActive: false,
     value: null
   },
   {
     id: '5',
-    name: "no-multiple-empty-lines",
+    name: "print jump",
+    codeName: "printJump",
     isActive: false,
-    value: null,
-  }
+    value: null
+  },
+  {
+    id: '6',
+    name: "if indentation",
+    codeName: "ifIndentation",
+    isActive: false,
+    value: null
+  },
 ]
 
 const INITIAL_LINTING_RULES: Rule[] = [
   {
     id: '1',
-    name: "no-expressions-in-print-line",
-    isActive: true,
+    name: "expressions-in-print-line",
+    codeName: "enablePrintExpressions",
+    isActive: false,
     value: null
   },
   {
     id: '2',
-    name: "no-unused-vars",
-    isActive: true,
+    name: "snake-case-variables",
+    codeName: "caseConvention",
+    isActive: false,
     value: null
   },
   {
     id: '3',
-    name: "no-undef-vars",
+    name: "camel-case-variables",
+    codeName: "caseConvention",
     isActive: false,
     value: null
-  },
-  {
-    id: '4',
-    name: "no-unused-params",
-    isActive: false,
-    value: null
-  },
+    },
 ]
 
 const fakeTestCases: TestCase[] = [
