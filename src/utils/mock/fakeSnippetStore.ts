@@ -9,7 +9,7 @@ const INITIAL_SNIPPETS: Snippet[] = [
   {
     id: 1,
     name: 'Super Snippet',
-    content: 'println(  \'Hello World!\');',
+    content: 'println(   \'Hello World!\');',
     compliance: 'pending',
     author: 'John Doe',
     language: 'printscript',
