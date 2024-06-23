@@ -13,6 +13,7 @@ const DELAY: number = 1000
 
 // Retrieve the token from localStorage
 const token = localStorage.getItem("@@auth0spajs@@::MChgRhyd44fZZMqSWXHMNDtfgT4Vs7KV::https://snippet-security::openid profile email");
+
 let access_token = '';
 
 if (token) {
@@ -117,6 +118,7 @@ export class FakeSnippetOperations implements SnippetOperations {
           acc[rule.name] = rule.value;
           return acc;
         }, {});
+        console.log("new rules: ", payload)
         const response = await axios.post(`${SNIPPET_OPERATIONS_URL}/rules/format`, payload);
         console.log(response)
         resolve(newRules);
@@ -130,10 +132,12 @@ export class FakeSnippetOperations implements SnippetOperations {
   modifyLintingRule(newRules: Rule[]): Promise<Rule[]> {
     return new Promise(async (resolve, reject) => {
       try {
+
         const payload = newRules.reduce((acc: Record<string, any>, rule: Rule) => {
           acc[rule.name] = rule.value;
           return acc;
         }, {});
+        console.log("new rules: ", payload)
         const response = await axios.post(`${SNIPPET_OPERATIONS_URL}/rules/lint`, payload);
         console.log(response)
         resolve(newRules);
@@ -185,7 +189,7 @@ export class FakeSnippetOperations implements SnippetOperations {
 
   async createSnippet(createSnippet: CreateSnippet): Promise<Snippet> {
     try {
-      const response = await axios.post(`${SNIPPET_OPERATIONS_URL}`, createSnippet)
+      const response = await axios.post(`${SNIPPET_OPERATIONS_URL}/`, createSnippet)
       console.log(response)
       return {
         id: response.data.id,
@@ -204,17 +208,9 @@ export class FakeSnippetOperations implements SnippetOperations {
 
   async getFormatRules(): Promise<Rule[]> {
     try {
-      const response = await axios.get(`${SNIPPET_OPERATIONS_URL}/rules/format`);
+      const response = await axios.get(`/api/rules/format`);
       console.log(response)
       const data = response.data
-      // data is {
-      //     "colonBefore": true,
-      //     "colonAfter": true,
-      //     "assignationBefore": true,
-      //     "assignationAfter": true,
-      //     "printJump": 1
-      // }
-      // convert data into Rule[]
       const rules: Rule[] = []
       for (const [key, value] of Object.entries(data)) {
         rules.push({
@@ -234,14 +230,10 @@ export class FakeSnippetOperations implements SnippetOperations {
 
   async getLintingRules(): Promise<Rule[]> {
     try {
-      const response = await axios.get(`${SNIPPET_OPERATIONS_URL}/rules/lint`);
+      //const response = await axios.get(`${SNIPPET_OPERATIONS_URL}/rules/lint`);
+      const response = await axios.get(`/api/rules/lint`);
       console.log(response)
       const data = response.data
-      // data is {
-      //     "enablePrintExpressions": false,
-      //     "caseConvention": "CAMEL_CASE"
-      // }
-      // convert data into Rule[]
       const rules: Rule[] = []
       for (const [key, value] of Object.entries(data)) {
         rules.push({

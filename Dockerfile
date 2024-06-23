@@ -1,9 +1,13 @@
-FROM node:22-alpine as BUILD_IMAGE
-WORKDIR /app/printscript-ui
-COPY package.json .
-RUN npm install
+FROM node:20-slim AS build
 
-COPY . .
+WORKDIR /app
+
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
+
+RUN npm ci
+
+COPY . /app
 
 ARG SNIPPET_RUNNER_URL
 ARG SNIPPET_OPERATIONS_URL
@@ -25,11 +29,15 @@ ENV VITE_AUTH0_AUDIENCE=$AUTH0_AUDIENCE
 
 
 RUN npm run build
-FROM node:22-alpine as PRODUCTION_IMAGE
-WORKDIR /app/printscript-ui
-COPY --from=BUILD_IMAGE /app/printscript-ui/dist /app/printscript-ui/dist
-EXPOSE 5173
-COPY package.json .
-COPY vite.config.ts .
-RUN npm install typescript
-CMD ["npm", "run", "preview"]
+
+FROM nginx:alpine
+
+COPY --from=build /app/.nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+WORKDIR /usr/share/nginx/html
+
+RUN rm -rf ./*
+
+COPY --from=build /app/dist .
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
