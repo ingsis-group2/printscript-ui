@@ -1,5 +1,5 @@
-export const SNIPPET_RUNNER_URL = import.meta.env.VITE_SNIPPET_RUNNER_URL || "http://localhost:8080";
-export const SNIPPET_OPERATIONS_URL = import.meta.env.VITE_SNIPPET_OPERATIONS_URL || "";
+export const SNIPPET_RUNNER_URL = import.meta.env.VITE_SNIPPET_RUNNER_URL || "http://localhost:8083";
+export const SNIPPET_OPERATIONS_URL = import.meta.env.VITE_SNIPPET_OPERATIONS_URL || "http://localhost:8081";
 export const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL || "";
 export const AUTH0_USERNAME = import.meta.env.VITE_AUTH0_USERNAME || "";
 export const AUTH0_PASSWORD = import.meta.env.VITE_AUTH0_PASSWORD || "";

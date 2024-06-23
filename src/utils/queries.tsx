@@ -1,7 +1,6 @@
 import {useMutation, UseMutationResult, useQuery} from 'react-query';
 import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from './snippet.ts';
 import {SnippetOperations} from "./snippetOperations.ts";
-import {PaginatedUsers} from "./users.ts";
 import {FakeSnippetOperations} from "./mock/fakeSnippetOperations.ts";
 import {TestCase} from "../types/TestCase.ts";
 import {FileType} from "../types/FileType.ts";
@@ -134,6 +133,4 @@ export const useFormatSnippet = () => {
   );
 }
 
-export const useGetUsers = (page: number = 0, pageSize: number = 10) => {
-  return useQuery<PaginatedUsers, Error>(['users',name,page,pageSize], () => snippetOperations.getUsers(page, pageSize));
-};
+

@@ -85,42 +85,36 @@ const INITIAL_FORMATTING_RULES: Rule[] = [
   {
     id: '1',
     name: "colon before",
-    codeName: "colonBefore",
     isActive: false,
     value: null
   },
   {
     id: '2',
     name: "colon after",
-    codeName: "colonAfter",
     isActive: false,
     value: null
   },
   {
     id: '3',
     name: "assignation before",
-    codeName: "assignationBefore",
     isActive: false,
     value: null
   },
   {
     id: '4',
     name: "assignation after",
-    codeName: "assignationAfter",
     isActive: false,
     value: null
   },
   {
     id: '5',
     name: "print jump",
-    codeName: "printJump",
     isActive: false,
     value: null
   },
   {
     id: '6',
     name: "if indentation",
-    codeName: "ifIndentation",
     isActive: false,
     value: null
   },
@@ -130,21 +124,18 @@ const INITIAL_LINTING_RULES: Rule[] = [
   {
     id: '1',
     name: "expressions-in-print-line",
-    codeName: "enablePrintExpressions",
     isActive: false,
     value: null
   },
   {
     id: '2',
     name: "snake-case-variables",
-    codeName: "caseConvention",
     isActive: false,
     value: null
   },
   {
     id: '3',
     name: "camel-case-variables",
-    codeName: "caseConvention",
     isActive: false,
     value: null
     },

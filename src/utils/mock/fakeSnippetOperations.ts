@@ -2,7 +2,6 @@ import {SnippetOperations} from '../snippetOperations'
 import {FakeSnippetStore} from './fakeSnippetStore'
 import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from '../snippet'
 import autoBind from 'auto-bind'
-import {PaginatedUsers} from "../users.ts";
 import {TestCase} from "../../types/TestCase.ts";
 import {ExecutionResult, FormatterOutput, TestCaseResult} from "../queries.tsx";
 import {FileType} from "../../types/FileType.ts";
@@ -43,8 +42,6 @@ export class FakeSnippetOperations implements SnippetOperations {
     autoBind(this)
   }
 
-
-
   getSnippetById(id: number): Promise<Snippet | undefined> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.getSnippetById(id)), DELAY)
@@ -70,23 +67,10 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-
   shareSnippet(snippetId: number): Promise<Snippet> {
     return new Promise(resolve => {
       // @ts-expect-error, it will always find it in the fake store
       setTimeout(() => resolve(this.fakeStore.getSnippetById(snippetId)), DELAY)
-    })
-  }
-
-  getFormatRules(): Promise<Rule[]> {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(this.fakeStore.getFormatRules()), DELAY)
-    })
-  }
-
-  getLintingRules(): Promise<Rule[]> {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(this.fakeStore.getLintingRules()), DELAY)
     })
   }
 
@@ -127,15 +111,37 @@ export class FakeSnippetOperations implements SnippetOperations {
   }
 
   modifyFormatRule(newRules: Rule[]): Promise<Rule[]> {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(this.fakeStore.modifyFormattingRule(newRules)), DELAY)
-    })
+    return new Promise(async (resolve, reject) => {
+      try {
+        const payload = newRules.reduce((acc: Record<string, any>, rule: Rule) => {
+          acc[rule.name] = rule.value;
+          return acc;
+        }, {});
+        const response = await axios.post(`${SNIPPET_OPERATIONS_URL}/rules/format`, payload);
+        console.log(response)
+        resolve(newRules);
+      } catch (error) {
+        console.error("Error modifying formatting rules:", error);
+        reject(error);
+      }
+    });
   }
 
   modifyLintingRule(newRules: Rule[]): Promise<Rule[]> {
-    return new Promise(resolve => {
-      setTimeout(() => resolve(this.fakeStore.modifyLintingRule(newRules)), DELAY)
-    })
+    return new Promise(async (resolve, reject) => {
+      try {
+        const payload = newRules.reduce((acc: Record<string, any>, rule: Rule) => {
+          acc[rule.name] = rule.value;
+          return acc;
+        }, {});
+        const response = await axios.post(`${SNIPPET_OPERATIONS_URL}/rules/lint`, payload);
+        console.log(response)
+        resolve(newRules);
+      } catch (error) {
+        console.error("Error modifying linting rules:", error);
+        reject(error);
+      }
+    });
   }
 
   async executeSnippet(content: string, version: string, inputs: string[]): Promise<ExecutionResult> {
@@ -157,17 +163,16 @@ export class FakeSnippetOperations implements SnippetOperations {
 
   async formatSnippet(content: string, version: string): Promise<FormatterOutput> {
     try {
+      const formatRules = await this.getFormatRules();
       const payload = {
         content,
         version,
-        formatRules: {
-          "colonBefore": false,
-          "colonAfter": false,
-          "assignationBefore": false,
-          "assignationAfter": false,
-          "printJump": 1,
-          "ifIndentation": 2
-        }
+        formatRules: formatRules.reduce((acc: Record<string, any>, rule: Rule) => {
+          if (rule.value !== null) {
+            acc[rule.name] = rule.value;
+          }
+          return acc;
+        }, {})
       };
       const response = await axios.post(`${SNIPPET_RUNNER_URL}/format`, payload);
       console.log(response)
@@ -197,27 +202,60 @@ export class FakeSnippetOperations implements SnippetOperations {
     }
   }
 
-
-  async getUsers(page: number, pageSize: number): Promise<PaginatedUsers> {
+  async getFormatRules(): Promise<Rule[]> {
     try {
-      console.log(page, pageSize)
-      // Fetch users from Auth0
-      // const response = await axios.get(`https://dev-77ie0xuayhhodlbg.us.auth0.com/api/v2/users`, {
-      // });
-      return {
-        page: page,
-        page_size: pageSize,
-        count: 20,
-        users: [
-          {
-            id: '1',
-            name: 'User 1',
-            }]
+      const response = await axios.get(`${SNIPPET_OPERATIONS_URL}/rules/format`);
+      console.log(response)
+      const data = response.data
+      // data is {
+      //     "colonBefore": true,
+      //     "colonAfter": true,
+      //     "assignationBefore": true,
+      //     "assignationAfter": true,
+      //     "printJump": 1
+      // }
+      // convert data into Rule[]
+      const rules: Rule[] = []
+      for (const [key, value] of Object.entries(data)) {
+        rules.push({
+          id: key,
+          name: key,
+          isActive: value != null,
+          value: value
+        })
       }
+      console.log(rules)
+      return rules
     } catch (error) {
-      console.error("Error getting users:", error);
+      console.error("Error getting formatting rules:", error);
+      throw error;
+    }
+  }
+
+  async getLintingRules(): Promise<Rule[]> {
+    try {
+      const response = await axios.get(`${SNIPPET_OPERATIONS_URL}/rules/lint`);
+      console.log(response)
+      const data = response.data
+      // data is {
+      //     "enablePrintExpressions": false,
+      //     "caseConvention": "CAMEL_CASE"
+      // }
+      // convert data into Rule[]
+      const rules: Rule[] = []
+      for (const [key, value] of Object.entries(data)) {
+        rules.push({
+          id: key,
+          name: key,
+          isActive: value != null,
+          value: value
+        })
+      }
+      console.log(rules)
+      return rules
+    } catch (error) {
+      console.error("Error getting formatting rules:", error);
       throw error;
     }
   }
 }
-
