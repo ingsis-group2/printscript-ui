@@ -41,9 +41,9 @@ jobs:
       - name: Deploy to VM
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.VM_IP_MASTER }}
+          username: "azureuser"
+          key: ${{ secrets.PRIVATE_KEY_MASTER }}
           script: |
             cd snippet-infra
             sudo docker compose -f docker-compose.master.yml stop printscript-ui
