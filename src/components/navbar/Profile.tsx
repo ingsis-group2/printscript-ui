@@ -1,5 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Box, Avatar, Typography, Popover, Button } from "@mui/material";
 import { AUTH0_AUDIENCE } from "../../utils/constants.ts";
@@ -23,7 +23,7 @@ const Profile = () => {
             }
         };
 
-        getUserToken();
+        getUserToken().then(r => r);
     }, [getAccessTokenSilently, isAuthenticated, user]);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
