@@ -1,6 +1,5 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React, { useEffect, useState } from "react";
-import Cookies from "js-cookie";
 import { Box, Avatar, Typography, Popover, Button } from "@mui/material";
 import { AUTH0_AUDIENCE } from "../../utils/constants.ts";
 
@@ -15,7 +14,7 @@ const Profile = () => {
                     const accessToken = await getAccessTokenSilently({
                         authorizationParams: { audience: AUTH0_AUDIENCE },
                     });
-                    Cookies.set("accessToken", accessToken, { expires: 3 });
+                    localStorage.setItem('accessToken', accessToken);
                     console.log(accessToken);
                 } catch (e: unknown) {
                     console.error(e);
@@ -33,6 +32,14 @@ const Profile = () => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handleLogout = () => {
+
+        logout().then(() => {
+            localStorage.removeItem('accessToken');
+        }
+        );
+    }
 
     const open = Boolean(anchorEl);
     const id = open ? 'profile-popover' : undefined;
@@ -86,7 +93,7 @@ const Profile = () => {
                             {user.name}
                         </Typography>
                         <Button
-                            onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                            onClick={handleLogout}
                             variant="contained"
                             color="primary"
                             sx={{ borderRadius: 2 }}

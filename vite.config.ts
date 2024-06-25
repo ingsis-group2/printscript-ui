@@ -30,10 +30,5 @@ export default defineConfig(({ mode }) => {
         }
       }
     },
-    build: {
-      rollupOptions: {
-        external: ['js-cookie']
-      }
-    }
   }
 });

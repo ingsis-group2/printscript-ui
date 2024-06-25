@@ -1,8 +1,6 @@
 import axios from 'axios';
-import Cookies from "js-cookie";
-
 const getToken = (): string | null => {
-    return Cookies.get('accessToken') || null;
+    return localStorage.getItem('accessToken');
 };
 
 const axiosInstance = axios.create();
