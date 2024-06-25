@@ -19,7 +19,7 @@ export interface SnippetOperations {
 
   getTestCases(): Promise<TestCase[]>
 
-  postTestCase(testCase: Partial<TestCase>): Promise<TestCase>
+    postTestCase(testCase: Partial<TestCase>): Promise<TestCase>
 
   removeTestCase(id: number): Promise<number>
 

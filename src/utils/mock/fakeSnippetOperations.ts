@@ -11,30 +11,6 @@ import {SNIPPET_RUNNER_URL, SNIPPET_OPERATIONS_URL} from "../constants.ts";
 
 const DELAY: number = 1000
 
-// Retrieve the token from localStorage
-const token = localStorage.getItem("@@auth0spajs@@::MChgRhyd44fZZMqSWXHMNDtfgT4Vs7KV::https://snippet-security::openid profile email");
-
-let access_token = '';
-
-if (token) {
-  const tokenObj = JSON.parse(token);
-  access_token = tokenObj.body.access_token;
-  console.log(access_token);
-}
-
-// Set up Axios interceptor to add Authorization header to all requests
-axios.interceptors.request.use(
-    config => {
-      if (access_token) {
-        config.headers.Authorization = `Bearer ${access_token}`;
-      }
-      return config;
-    },
-    error => {
-      return Promise.reject(error);
-    }
-);
-
 
 export class FakeSnippetOperations implements SnippetOperations {
   private readonly fakeStore = new FakeSnippetStore()
@@ -81,7 +57,7 @@ export class FakeSnippetOperations implements SnippetOperations {
     })
   }
 
-  postTestCase(testCase: TestCase): Promise<TestCase> {
+  postTestCase(testCase: Partial<TestCase>): Promise<TestCase> {
     return new Promise(resolve => {
       setTimeout(() => resolve(this.fakeStore.postTestCase(testCase)), DELAY)
     })
@@ -208,7 +184,7 @@ export class FakeSnippetOperations implements SnippetOperations {
 
   async getFormatRules(): Promise<Rule[]> {
     try {
-      const response = await axios.get(`/api/rules/format`);
+      const response = await axios.get(`${SNIPPET_OPERATIONS_URL}/rules/format`);
       console.log(response)
       const data = response.data
       const rules: Rule[] = []
@@ -230,8 +206,8 @@ export class FakeSnippetOperations implements SnippetOperations {
 
   async getLintingRules(): Promise<Rule[]> {
     try {
-      //const response = await axios.get(`${SNIPPET_OPERATIONS_URL}/rules/lint`);
-      const response = await axios.get(`/api/rules/lint`);
+      const response = await axios.get(`${SNIPPET_OPERATIONS_URL}/rules/lint`);
+      //const response = await axios.get(`/api/rules/lint`);
       console.log(response)
       const data = response.data
       const rules: Rule[] = []

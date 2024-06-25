@@ -1,13 +1,9 @@
-FROM node:20-slim AS build
-
+FROM node:lts-alpine3.14 as build
+RUN mkdir /app
 WORKDIR /app
-
-COPY package.json /app/package.json
-COPY package-lock.json /app/package-lock.json
-
-RUN npm ci
-
-COPY . /app
+COPY package.json .
+RUN npm install
+COPY . .
 
 ARG SNIPPET_RUNNER_URL
 ARG SNIPPET_OPERATIONS_URL
@@ -27,17 +23,16 @@ ENV VITE_AUTH0_DOMAIN=$AUTH0_DOMAIN
 ENV VITE_AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID
 ENV VITE_AUTH0_AUDIENCE=$AUTH0_AUDIENCE
 
-
 RUN npm run build
 
-FROM nginx:alpine
 
-COPY --from=build /app/.nginx/nginx.conf /etc/nginx/conf.d/default.conf
 
-WORKDIR /usr/share/nginx/html
-
-RUN rm -rf ./*
-
-COPY --from=build /app/dist .
-
-ENTRYPOINT ["nginx", "-g", "daemon off;"]
+FROM node:lts-alpine3.14 as production
+WORKDIR /app
+COPY --from=build /app/dist /app/dist
+COPY package.json .
+COPY vite.config.ts .
+RUN npm install --production
+RUN npm install vite
+EXPOSE 5173
+CMD ["npm", "run", "preview"]

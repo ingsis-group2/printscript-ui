@@ -43,13 +43,18 @@ const LintingRulesList = () => {
   const toggleRule = (rule: Rule) => () => {
     const newRules = rules?.map(r => {
       if (r.name === rule.name) {
-        return {...r, isActive: !r.isActive}
+        const modifiedRule = typeof rule.value === 'boolean'
+            ? {...r, isActive: !r.isActive, value: !r.value}
+            : typeof rule.value === 'string'
+                ? {...r, isActive: !r.isActive, value: null}
+                : {...r, isActive: !r.isActive};
+        return modifiedRule;
       } else {
         return r;
       }
-    })
-    setRules(newRules)
-  }
+    });
+    setRules(newRules);
+  };
 
   return (
     <Card style={{padding: 16, margin: 16}}>

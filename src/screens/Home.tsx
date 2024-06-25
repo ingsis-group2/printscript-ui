@@ -17,7 +17,8 @@ const HomeScreen = () => {
   const [snippetId, setSnippetId] = useState<number | null>(null)
   const {page, page_size, count, handleChangeCount} = usePaginationContext()
   const {data, isLoading} = useGetSnippets(page, page_size, snippetName)
-  const { isAuthenticated, isLoading: isLoadingAuth } = useAuth0();
+  const { isAuthenticated, isLoading: isLoadingAuth} = useAuth0();
+
 
   useEffect(() => {
     if (data?.count && data.count != count) {
@@ -33,6 +34,7 @@ const HomeScreen = () => {
   }, [paramsId]);
 
   const handleCloseModal = () => setSnippetId(null)
+
 
   // DeBounce Function
   useDebounce(() => {

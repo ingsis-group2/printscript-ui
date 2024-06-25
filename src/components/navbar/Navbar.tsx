@@ -3,6 +3,8 @@ import {Code, Rule} from "@mui/icons-material";
 import {ReactNode} from "react";
 import {useAuth0} from "@auth0/auth0-react";
 import {useLocation, useNavigate} from "react-router-dom";
+import Profile from "./Profile.tsx";
+
 
 type PageType = {
     title: string;
@@ -21,7 +23,7 @@ const pages: PageType[] = [{
 }];
 
 export const Navbar = () => {
-    const {loginWithRedirect, logout, isAuthenticated, user} = useAuth0();
+    const { isAuthenticated, loginWithRedirect } = useAuth0();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -64,16 +66,28 @@ export const Navbar = () => {
                             </Button>
                         ))}
                     </Box>
-                    <Box sx={{display: {xs: 'none', md: 'flex'}, gap: '24px', alignItems: 'center'}}>
                     {isAuthenticated ? (
                         <>
-                            <Typography sx={{color: 'white'}}>{user?.name}</Typography>
-                            <Button sx={{color: 'white'}} onClick={() => logout()}>Logout</Button>
+                            <Profile />
                         </>
                     ) : (
-                        <Button sx={{color: 'white'}} onClick={() => loginWithRedirect()}>Login</Button>
+                        <Button
+                            onClick={() => loginWithRedirect()}
+                            sx={{
+                                my: 2,
+                                color: 'white',
+                                display: 'flex',
+                                justifyContent: "center",
+                                gap: "4px",
+                                backgroundColor: 'primary.light',
+                                "&:hover": {
+                                    backgroundColor: 'primary.dark'
+                                }
+                            }}
+                        >
+                            Log In
+                        </Button>
                     )}
-                    </Box>
                 </Toolbar>
             </Container>
         </AppBar>
