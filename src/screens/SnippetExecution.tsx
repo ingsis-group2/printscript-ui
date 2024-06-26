@@ -1,41 +1,72 @@
-import {OutlinedInput} from "@mui/material";
-import {highlight, languages} from "prismjs";
+import React, { useEffect, useState } from "react";
+import { Box, OutlinedInput } from "@mui/material";
+import { highlight, languages } from "prismjs";
 import Editor from "react-simple-code-editor";
-import {Bòx} from "../components/snippet-table/SnippetBox.tsx";
-import {useState} from "react";
+import { useExecuteSnippet } from "../utils/queries.tsx";
+import { Snippet } from "../utils/snippet.ts";
 
-export const SnippetExecution = () => {
-  // Here you should provide all the logic to connect to your sockets.
-  const [input, setInput] = useState<string>("")
-  const [output, setOutput] = useState<string[]>([]);
+export const SnippetExecution = ({ runSnippet, snippet, version } : { runSnippet: boolean, snippet?: Snippet, version: string }) => {
+    const [input, setInput] = useState<string>("");
+    const [inputs, setInputs] = useState<string[]>([]);
+    const [output, setOutput] = useState<string[]>([]);
+    const { mutate: executeSnippet, isLoading: loading, data: executionResult } = useExecuteSnippet();
 
-  //TODO: get the output from the server
-  const code = output.join("\n")
+    useEffect(() => {
+        if (executionResult) {
+            setOutput(executionResult.outputs);
+            if (executionResult.errors.length) {
+                console.error("Errors:", executionResult.errors);
+            }
+        }
+    }, [executionResult]);
 
-  const handleEnter = (event: { key: string }) => {
-    if (event.key === 'Enter') {
-      //TODO: logic to send inputs to server
-      setOutput([...output, input])
-      setInput("")
-    }
-  };
+    useEffect(() => {
+        if (runSnippet && snippet) {
+            executeSnippet({ content: snippet.content, version: version, inputs });
+        }
+    }, [runSnippet, snippet, executeSnippet, inputs]);
+
+    const handleEnter = (event: React.KeyboardEvent) => {
+        if (event.key === "Enter" && !loading) {
+            setInputs(prevInputs => [...prevInputs, input]);
+            setInput("");
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput(e.target.value);
+    };
+
+    useEffect(() => {
+        if (!loading && inputs.length > 0 && snippet) {
+            executeSnippet({ content: snippet.content, version: version, inputs });
+        }
+    }, [inputs, executeSnippet, snippet]);
+
+    const code = output.join("\n");
 
     return (
-      <>
-        <Bòx flex={1} overflow={"none"} minHeight={200} bgcolor={'black'} color={'white'} code={code}>
-            <Editor
-              value={code}
-              padding={10}
-              onValueChange={(code) => setInput(code)}
-              highlight={(code) => highlight(code, languages.js, 'javascript')}
-              maxLength={1000}
-              style={{
-                  fontFamily: "monospace",
-                  fontSize: 17,
-              }}
+        <>
+            <Box flex={1} overflow={"none"} minHeight={200} bgcolor={'black'} color={'white'}>
+                <Editor
+                    value={code}
+                    onValueChange={() => {}}
+                    padding={10}
+                    highlight={(code) => highlight(code, languages.js, 'javascript')}
+                    maxLength={1000}
+                    style={{
+                        fontFamily: "monospace",
+                        fontSize: 17,
+                    }}
+                />
+            </Box>
+            <OutlinedInput
+                onKeyDown={handleEnter}
+                value={input}
+                onChange={handleInputChange}
+                placeholder="Type here"
+                fullWidth
             />
-        </Bòx>
-        <OutlinedInput onKeyDown={handleEnter} value={input} onChange={e => setInput(e.target.value)} placeholder="Type here" fullWidth/>
-      </>
-    )
+        </>
+    );
 }

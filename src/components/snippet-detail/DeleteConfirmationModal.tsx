@@ -6,7 +6,7 @@ import {queryClient} from "../../App.tsx";
 type DeleteConfirmationModalProps = {
   open: boolean
   onClose: () => void
-  id: string;
+  id: number;
   setCloseDetails: () => void;
 }
 export const DeleteConfirmationModal = (props: DeleteConfirmationModalProps) => {

@@ -1,0 +1,51 @@
+name: "Continuous Deployment Dev"
+
+on:
+  workflow_dispatch:
+  push:
+        branches:
+        - dev
+jobs:
+  push_printscript_ui:
+    name: Push printscript image to ghcr.io
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Short SHA
+        uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 8
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push to GitHub Packages
+        id: docker_build
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: ghcr.io/ingsis-group2/printscript-ui-dev:latest
+          build-args: |
+            SNIPPET_RUNNER_URL=${{ secrets.SNIPPET_RUNNER_URL }}
+            SNIPPET_OPERATIONS_URL=${{ secrets.SNIPPET_OPERATIONS_URL }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+            AUTH0_USERNAME=${{ secrets.AUTH0_USERNAME }}
+            AUTH0_PASSWORD=${{ secrets.AUTH0_PASSWORD }}
+            AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
+            AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}
+            AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_IP_DEV }}
+          username: "azureuser"
+          key: ${{ secrets.PRIVATE_KEY_DEV }}
+          script: |
+            cd snippet-infra
+            sudo docker compose -f docker-compose.dev.yml stop printscript-ui
+            sudo docker compose -f docker-compose.dev.yml pull
+            sudo docker compose -f docker-compose.dev.yml up printscript-ui -d --build

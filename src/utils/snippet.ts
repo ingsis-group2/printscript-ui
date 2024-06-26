@@ -10,9 +10,9 @@ export type ComplianceEnum =
 
 export type CreateSnippet = {
   name: string;
-  content: string;
   language: string;
   extension: string;
+  content: string;
 }
 
 export type CreateSnippetWithLang = CreateSnippet & { language: string }
@@ -22,8 +22,20 @@ export type UpdateSnippet = {
 }
 
 export type Snippet = CreateSnippet & {
-  id: string
+  id: number
 } & SnippetStatus
+
+// data class SnippetDTO(
+//     val id: Long,
+//     val writer: String,
+//     val name: String,
+//     val language: String,
+//     val extension: String,
+//     val readers: List<String>,
+//     val content: String,
+//     val creationDate: LocalDateTime,
+//     val updateDate: LocalDateTime?,
+// )
 
 type SnippetStatus = {
   compliance: ComplianceEnum;

@@ -4,7 +4,7 @@ import {highlight, languages} from "prismjs";
 import "prismjs/components/prism-clike";
 import "prismjs/components/prism-javascript";
 import "prismjs/themes/prism-okaidia.css";
-import {Alert, Box, CircularProgress, IconButton, Tooltip, Typography} from "@mui/material";
+import {Alert, Box, CircularProgress, IconButton, OutlinedInput, Tooltip, Typography} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import {
   useUpdateSnippetById
@@ -21,7 +21,7 @@ import {queryClient} from "../App.tsx";
 import {DeleteConfirmationModal} from "../components/snippet-detail/DeleteConfirmationModal.tsx";
 
 type SnippetDetailProps = {
-  id: string;
+  id: number;
   handleCloseModal: () => void;
 }
 
@@ -53,6 +53,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
   const [code, setCode] = useState(
       ""
   );
+  const [version, setVersion] = useState("1.1");
   const [shareModalOppened, setShareModalOppened] = useState(false)
   const [deleteConfirmationModalOpen, setDeleteConfirmationModalOpen] = useState(false)
   const [testModalOpened, setTestModalOpened] = useState(false);
@@ -71,15 +72,19 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
 
   useEffect(() => {
     if (formatSnippetData) {
-      setCode(formatSnippetData)
+      setCode(formatSnippetData.formattedCode);
     }
   }, [formatSnippetData])
 
+  const handleVersionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVersion(e.target.value);
+  };
 
   async function handleShareSnippet(userId: string) {
     shareSnippet({snippetId: id, userId})
   }
 
+  // @ts-ignore
   return (
       <Box p={4} minWidth={'60vw'}>
         <Box width={'100%'} p={2} display={'flex'} justifyContent={'flex-end'}>
@@ -109,7 +114,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
                 </IconButton>
               </Tooltip>
               <Tooltip title={"Format"}>
-                <IconButton onClick={() => formatSnippet(code)} disabled={isFormatLoading}>
+                <IconButton onClick={() => snippet ? formatSnippet({content: snippet.content, version}) : undefined} disabled={isFormatLoading}>
                   <ReadMoreIcon />
                 </IconButton>
               </Tooltip>
@@ -124,8 +129,18 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
                 </IconButton>
               </Tooltip>
             </Box>
+            <Box display="flex" flexDirection="column" gap="4px" padding="4px" width="200px" mb={2}>
+              <Typography variant="body2">Version</Typography>
+              <OutlinedInput
+                  value={version}
+                  onChange={handleVersionChange}
+                  placeholder="Version"
+                  fullWidth
+                  size="small"
+              />
+            </Box>
             <Box display={"flex"} gap={2}>
-              <Bòx flex={1} height={"fit-content"} overflow={"none"} minHeight={"500px"} bgcolor={'black'} color={'white'} code={code}>
+              <Bòx flex={1} height={"fit-content"} overflow={"none"} minHeight={"300px"} bgcolor={'black'} color={'white'} code={code}>
                 <Editor
                     value={code}
                     padding={10}
@@ -133,7 +148,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
                     highlight={(code) => highlight(code, languages.js, "javascript")}
                     maxLength={1000}
                     style={{
-                      minHeight: "500px",
+                      minHeight: "300px",
                       fontFamily: "monospace",
                       fontSize: 17,
                     }}
@@ -142,7 +157,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
             </Box>
             <Box pt={1} flex={1} marginTop={2}>
               <Alert severity="info">Output</Alert>
-              <SnippetExecution />
+              <SnippetExecution runSnippet={runSnippet} snippet={snippet} version={version}/>
             </Box>
           </>
         }
@@ -150,7 +165,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
                            onClose={() => setShareModalOppened(false)}
                            onShare={handleShareSnippet}/>
         <TestSnippetModal open={testModalOpened} onClose={() => setTestModalOpened(false)}/>
-        <DeleteConfirmationModal open={deleteConfirmationModalOpen} onClose={() => setDeleteConfirmationModalOpen(false)} id={snippet?.id ?? ""} setCloseDetails={handleCloseModal} />
+        <DeleteConfirmationModal open={deleteConfirmationModalOpen} onClose={() => setDeleteConfirmationModalOpen(false)} id={snippet?.id ?? 0} setCloseDetails={handleCloseModal} />
       </Box>
   );
 }
