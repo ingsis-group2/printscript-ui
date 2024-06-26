@@ -13,7 +13,7 @@ const fakeOperations = new FakeSnippetOperations();
 const adapter = new Adapter();
 
 export class SnippetService implements SnippetOperations {
-    listSnippetDescriptors(page: number, pageSize: number): Promise<PaginatedSnippets> {
+  listSnippetDescriptors(page: number, pageSize: number): Promise<PaginatedSnippets> {
     return fakeOperations.listSnippetDescriptors(page, pageSize);
   }
 
@@ -31,14 +31,14 @@ export class SnippetService implements SnippetOperations {
 
   async getFormatRules(): Promise<Rule[]> {
     const response = await axiosInstance.get(`${SNIPPET_OPERATIONS_URL}/rules/format`);
-    console.log(response)
+    console.log(response)// Log headers from response
     return adapter.adaptRules(response.data)
   }
 
   async getLintingRules(): Promise<Rule[]> {
     const response = await axiosInstance.get(`${SNIPPET_OPERATIONS_URL}/rules/lint`);
-    console.log(response)
-    return adapter.adaptRules(response.data)
+    console.log(response);
+    return adapter.adaptRules(response.data);
   }
 
   getTestCases(): Promise<TestCase[]> {
@@ -58,7 +58,7 @@ export class SnippetService implements SnippetOperations {
   }
 
   testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult> {
-    console.log(testCase)
+    console.log(testCase);
     return fakeOperations.testSnippet();
   }
 
@@ -67,35 +67,35 @@ export class SnippetService implements SnippetOperations {
   }
 
   async modifyFormatRule(newRules: Rule[]): Promise<Rule[]> {
-    const payload = adapter.adaptModifyRules(newRules)
-    console.log(payload)
+    const payload = adapter.adaptModifyRules(newRules);
+    console.log(payload);
     const response = await axiosInstance.post(`${SNIPPET_OPERATIONS_URL}/rules/format`, payload);
-    return adapter.adaptRules(response.data)
+    return adapter.adaptRules(response.data);
   }
 
   async modifyLintingRule(newRules: Rule[]): Promise<Rule[]> {
-    const payload = adapter.adaptModifyRules(newRules)
-    console.log(payload)
+    const payload = adapter.adaptModifyRules(newRules);
+    console.log(payload);
     const response = await axiosInstance.post(`${SNIPPET_OPERATIONS_URL}/rules/lint`, payload);
-    return adapter.adaptRules(response.data)
+    return adapter.adaptRules(response.data);
   }
 
   async executeSnippet(content: string, version: string, inputs: string[]): Promise<ExecutionResult> {
     const response = await axiosInstance.post(`${SNIPPET_RUNNER_URL}/execute`, {content, version, inputs})
-    console.log(response)
-    return response.data
+    console.log(response);
+    return response.data;
   }
 
   async formatSnippet(content: string, version: string): Promise<FormatterOutput> {
-    const rules = await this.getFormatRules()
-    const response = await axiosInstance.post(`${SNIPPET_RUNNER_URL}/format`, {content, version, rules})
-    console.log(response)
-    return response.data
+    const rules = await this.getFormatRules();
+    const response = await axiosInstance.post(`${SNIPPET_RUNNER_URL}/format`, {content, version, rules});
+    console.log(response);
+    return response.data;
   }
 
   async createSnippet(createSnippet: CreateSnippet): Promise<Snippet> {
-      const response = await axiosInstance.post(`${SNIPPET_OPERATIONS_URL}/`, createSnippet)
-      console.log(response)
-      return adapter.adaptSnippetCreateResponse(response.data)
+    const response = await axiosInstance.post(`${SNIPPET_OPERATIONS_URL}/snippet`, createSnippet);
+    console.log(response);
+    return adapter.adaptSnippetCreateResponse(response.data);
   }
 }
