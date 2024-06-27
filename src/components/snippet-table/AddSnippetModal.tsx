@@ -40,7 +40,7 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
         const newSnippet: CreateSnippet = {
             name: snippetName,
             language: language,
-            extension: fileTypes?.find((f) => f.language === language)?.extension ?? "prs",
+            extension: fileTypes?.find((f) => f.language === language)?.extension ?? "ps",
             content: code
         }
         await createSnippet(newSnippet);

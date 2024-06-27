@@ -96,7 +96,8 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
             <CircularProgress/>
           </>) : <>
             <Typography variant="h4" fontWeight={"bold"}>{snippet?.name ?? "Snippet"}</Typography>
-            <Box display="flex" flexDirection="row" gap="8px" padding="8px">
+            <Box display="flex" flexDirection="row" gap="8px" padding="8px" justifyContent={"space-between"} alignItems={"center"}>
+              <Box>
               <Tooltip title={"Share"}>
                 <IconButton onClick={() => setShareModalOppened(true)}>
                   <Share/>
@@ -128,16 +129,17 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
                   <Delete color={"error"} />
                 </IconButton>
               </Tooltip>
-            </Box>
-            <Box display="flex" flexDirection="column" gap="4px" padding="4px" width="200px" mb={2}>
-              <Typography variant="body2">Version</Typography>
-              <OutlinedInput
-                  value={version}
-                  onChange={handleVersionChange}
-                  placeholder="Version"
-                  fullWidth
-                  size="small"
-              />
+              </Box>
+              <Box display="flex" flexDirection="column" gap="4px" padding="4px" width="200px" mb={2}>
+                <Typography variant="body2">Version</Typography>
+                <OutlinedInput
+                    value={version}
+                    onChange={handleVersionChange}
+                    placeholder="Version"
+                    fullWidth
+                    size="small"
+                />
+              </Box>
             </Box>
             <Box display={"flex"} gap={2}>
               <Bòx flex={1} height={"fit-content"} overflow={"none"} minHeight={"300px"} bgcolor={'black'} color={'white'} code={code}>

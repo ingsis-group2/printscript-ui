@@ -9,8 +9,20 @@ import {SnippetService} from "../service/snippetService.ts";
 const snippetOperations: SnippetOperations = new SnippetService()
 
 export const useGetSnippets = (page: number = 0, snippetName?: string) => {
-  return useQuery<PaginatedSnippets, Error>(['listSnippets', page,snippetName], () => snippetOperations.listSnippetDescriptors(page,snippetName));
+  return useQuery<PaginatedSnippets, Error>(['listSnippets', page,snippetName], () => snippetOperations.listSnippetDescriptors(page, snippetName));
 };
+
+export const useGetSharedSnippets = (page: number = 0, snippetName?: string) => {
+  return useQuery<PaginatedSnippets, Error>(['listSharedSnippets', page,snippetName], () => snippetOperations.listSharedSnippetDescriptors(page, snippetName));
+}
+
+export const getOwnAndSharedSnippets = (page: number = 0, snippetName?: string) => {
+    return Promise.all([
+        snippetOperations.listSnippetDescriptors(page, snippetName),
+        snippetOperations.listSharedSnippetDescriptors(page, snippetName)
+    ])
+
+}
 
 export const useGetSnippetById = (id: number) => {
   return useQuery<Snippet | undefined, Error>(['snippet', id], () => snippetOperations.getSnippetById(id), {

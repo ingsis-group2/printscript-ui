@@ -16,7 +16,7 @@ const HomeScreen = () => {
   const [snippetName, setSnippetName] = useState('');
   const [snippetId, setSnippetId] = useState<number | null>(null)
   const {page, count, handleChangeCount} = usePaginationContext()
-  const {data, isLoading} = useGetSnippets(page, snippetName)
+  const {data, isLoading} = useGetSnippets(page, snippetName);
   const { isAuthenticated, isLoading: isLoadingAuth} = useAuth0();
 
 

@@ -5,7 +5,9 @@ import {FileType} from "../types/FileType.ts";
 import {Rule} from "../types/Rule.ts";
 
 export interface SnippetOperations {
-  listSnippetDescriptors(page: number,snippetName?: string): Promise<PaginatedSnippets>
+  listSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets>
+
+  listSharedSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets>
 
   getSnippetById(id: number): Promise<Snippet | undefined>
 

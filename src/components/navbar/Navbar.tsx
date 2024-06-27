@@ -72,6 +72,7 @@ export const Navbar = () => {
                         </>
                     ) : (
                         <Button
+                            id={"login-button"}
                             onClick={() => loginWithRedirect()}
                             sx={{
                                 my: 2,
