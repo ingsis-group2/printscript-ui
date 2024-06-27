@@ -16,12 +16,8 @@ export const useGetSharedSnippets = (page: number = 0, snippetName?: string) => 
   return useQuery<PaginatedSnippets, Error>(['listSharedSnippets', page,snippetName], () => snippetOperations.listSharedSnippetDescriptors(page, snippetName));
 }
 
-export const getOwnAndSharedSnippets = (page: number = 0, snippetName?: string) => {
-    return Promise.all([
-        snippetOperations.listSnippetDescriptors(page, snippetName),
-        snippetOperations.listSharedSnippetDescriptors(page, snippetName)
-    ])
-
+export const useGetAllSnippets = (page: number = 0, snippetName?: string) => {
+  return useQuery(['listAllSnippets', page,snippetName], () => snippetOperations.listAllSnippetDescriptors(page, snippetName));
 }
 
 export const useGetSnippetById = (id: number) => {

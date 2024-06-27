@@ -122,7 +122,7 @@ export const SnippetTable = (props: SnippetTableProps) => {
             )
           }
           </TableBody>
-          <TablePagination count={count < 4 ? count : -1} page={page} rowsPerPage={pageSize}
+          <TablePagination count={count < 10 ? count : -1} page={page} rowsPerPage={pageSize}
                            onPageChange={(_, page) => handleGoToPage(page)}
                            onRowsPerPageChange={e => handleChangePageSize(Number(e.target.value))}/>
         </Table>

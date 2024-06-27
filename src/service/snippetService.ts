@@ -23,6 +23,11 @@ export class SnippetService implements SnippetOperations {
     return adapter.adaptPaginatedSnippets(response.data, page, snippetName);
   }
 
+    async listAllSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets> {
+        const response = await axiosInstance.get(`${BACKEND_URL}/snippet/byReaderAndWriter?page=${page}`);
+        return adapter.adaptPaginatedSnippets(response.data, page, snippetName);
+    }
+
   async getSnippetById(id: number): Promise<Snippet | undefined> {
     const response = await axiosInstance.get(`${BACKEND_URL}/snippet/${id}`);
     return adapter.adaptSnippet(response.data);

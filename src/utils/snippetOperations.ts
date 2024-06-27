@@ -9,6 +9,8 @@ export interface SnippetOperations {
 
   listSharedSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets>
 
+  listAllSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets>
+
   getSnippetById(id: number): Promise<Snippet | undefined>
 
   updateSnippetById(id: number, updateSnippet: UpdateSnippet): Promise<Snippet>

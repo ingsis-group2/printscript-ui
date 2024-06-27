@@ -3,11 +3,10 @@ import {SnippetTable} from "../components/snippet-table/SnippetTable.tsx";
 import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import {SnippetDetail} from "./SnippetDetail.tsx";
-import {Box, CircularProgress, Drawer} from "@mui/material";
-import {useGetSnippets} from "../utils/queries.tsx";
+import {Box, Drawer, MenuItem, Select, SelectChangeEvent} from "@mui/material";
+import {useGetAllSnippets, useGetSharedSnippets, useGetSnippets} from "../utils/queries.tsx";
 import {usePaginationContext} from "../contexts/paginationContext.tsx";
 import useDebounce from "../hooks/useDebounce.ts";
-import {useAuth0} from "@auth0/auth0-react";
 
 const HomeScreen = () => {
   const {id: paramsId} = useParams<{ id: string }>();
@@ -15,11 +14,25 @@ const HomeScreen = () => {
   const [snippetName, setSnippetName] = useState('');
   const [snippetId, setSnippetId] = useState<number | null>(null)
   const {page, count, handleChangeCount} = usePaginationContext()
-  const {data, isLoading} = useGetSnippets(page, snippetName);
-  const { isLoading: isLoadingAuth} = useAuth0();
+  const [filter, setFilter] = useState<'mySnippets' | 'sharedSnippets' | 'allSnippets'>('mySnippets');
+
+    let queryFunction;
+    switch (filter) {
+        case 'sharedSnippets':
+            queryFunction = useGetSharedSnippets;
+            break;
+        case 'allSnippets':
+            queryFunction = useGetAllSnippets;
+            break;
+        case 'mySnippets':
+        default:
+            queryFunction = useGetSnippets;
+    }
+
+    const { data, isLoading } = queryFunction(page, snippetName);
 
 
-  useEffect(() => {
+    useEffect(() => {
     if (data?.count && data.count != count) {
       handleChangeCount(data.count)
     }
@@ -48,23 +61,32 @@ const HomeScreen = () => {
     setSearchTerm(snippetName);
   };
 
-  if (isLoadingAuth){
-    return(
-        <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
-          <CircularProgress/>
-        </Box>
-    )
-  }
+    const handleFilterChange = (event: SelectChangeEvent) => {
+        setFilter(event.target.value as 'mySnippets' | 'sharedSnippets' | 'allSnippets');
+    };
 
-  return (
-      <>
-                <SnippetTable loading={isLoading} handleClickSnippet={setSnippetId} snippets={data?.snippets}
-                                  handleSearchSnippet={handleSearchSnippet}/>
-                <Drawer open={!!snippetId} anchor={"right"} onClose={handleCloseModal}>
-                    {snippetId && <SnippetDetail handleCloseModal={handleCloseModal} id={snippetId}/>}
-                </Drawer>
-      </>
-  )
+
+    return (
+        <>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Select value={filter} onChange={handleFilterChange} sx={{
+                    height:'30px',
+                    width: '200px',
+                    background: 'white',
+                    borderRadius: '5px',
+                    padding: '5px',
+                }}>
+                    <MenuItem value="mySnippets">My Snippets</MenuItem>
+                    <MenuItem value="sharedSnippets">Shared Snippets</MenuItem>
+                    <MenuItem value="allSnippets">All Snippets</MenuItem>
+                </Select>
+            </Box>
+            <SnippetTable loading={isLoading} handleClickSnippet={setSnippetId} snippets={data?.snippets} handleSearchSnippet={handleSearchSnippet} />
+            <Drawer open={!!snippetId} anchor={"right"} onClose={handleCloseModal}>
+                {snippetId && <SnippetDetail handleCloseModal={handleCloseModal} id={snippetId} />}
+            </Drawer>
+        </>
+    );
 }
 
 export default withNavbar(HomeScreen);
