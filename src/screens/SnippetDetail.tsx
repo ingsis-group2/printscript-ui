@@ -114,7 +114,7 @@ export const SnippetDetail = (props: SnippetDetailProps) => {
                 </IconButton>
               </Tooltip>
               <Tooltip title={"Format"}>
-                <IconButton onClick={() => snippet ? formatSnippet({content: snippet.content, version}) : undefined} disabled={isFormatLoading}>
+                <IconButton onClick={() => snippet ? formatSnippet({snippetId: snippet.id, version}) : undefined} disabled={isFormatLoading}>
                   <ReadMoreIcon />
                 </IconButton>
               </Tooltip>

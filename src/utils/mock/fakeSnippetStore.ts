@@ -7,7 +7,7 @@ import {Rule} from "../../types/Rule.ts";
 
 const INITIAL_SNIPPETS: Snippet[] = [
   {
-    id: 1,
+    id: 102,
     name: 'Super Snippet',
     content: 'println(   \'Hello World!\');',
     compliance: 'pending',

@@ -15,8 +15,8 @@ const HomeScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [snippetName, setSnippetName] = useState('');
   const [snippetId, setSnippetId] = useState<number | null>(null)
-  const {page, page_size, count, handleChangeCount} = usePaginationContext()
-  const {data, isLoading} = useGetSnippets(page, page_size, snippetName)
+  const {page, count, handleChangeCount} = usePaginationContext()
+  const {data, isLoading} = useGetSnippets(page, snippetName)
   const { isAuthenticated, isLoading: isLoadingAuth} = useAuth0();
 
 
@@ -24,6 +24,7 @@ const HomeScreen = () => {
     if (data?.count && data.count != count) {
       handleChangeCount(data.count)
     }
+    console.log(data)
   }, [count, data?.count, handleChangeCount]);
 
 

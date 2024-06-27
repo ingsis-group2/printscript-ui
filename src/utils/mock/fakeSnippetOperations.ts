@@ -124,11 +124,11 @@ export class FakeSnippetOperations implements SnippetOperations {
     });
   }
 
-  async executeSnippet(content: string, version: string, inputs: string[]): Promise<ExecutionResult> {
+  async executeSnippet(snippetId: number, version: string, inputs: string[]): Promise<ExecutionResult> {
     try {
-      console.log(content, version, inputs)
+      console.log(snippetId, version, inputs)
       const payload = {
-        content,
+        snippetId,
         version,
         inputs
       };
@@ -141,11 +141,11 @@ export class FakeSnippetOperations implements SnippetOperations {
     }
   }
 
-  async formatSnippet(content: string, version: string): Promise<FormatterOutput> {
+  async formatSnippet(snippetId: number, version: string): Promise<FormatterOutput> {
     try {
       const formatRules = await this.getFormatRules();
       const payload = {
-        content,
+        snippetId,
         version,
         formatRules: formatRules.reduce((acc: Record<string, any>, rule: Rule) => {
           if (rule.value !== null) {

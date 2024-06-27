@@ -75,8 +75,8 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
             }
             <Box sx={{
                 display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'space-between',
+                gap: '16px',
+                alignItems: 'center',
             }}>
             <Box sx={{
                 display: 'flex',
@@ -99,6 +99,9 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
                     value={language}
                     label="Age"
                     onChange={(e: SelectChangeEvent<string>) => setLanguage(e.target.value)}
+                    sx={{
+                        height: "40px",
+                    }}
                 >
                     {
                         fileTypes?.map(x => (
@@ -108,14 +111,6 @@ export const AddSnippetModal = ({open, onClose, defaultSnippet}: {
                     }
                 </Select>
             </Box>
-            {/*<Box sx={{*/}
-            {/*    display: 'flex',*/}
-            {/*    flexDirection: 'column',*/}
-            {/*    gap: '16px'*/}
-            {/*}}>*/}
-            {/*    <InputLabel htmlFor="name">Version</InputLabel>*/}
-            {/*    <Input onChange={e => setVersion(e.target.value)} value={version} id="name"/>*/}
-            {/*</Box>*/}
     </Box>
             <InputLabel>Code Snippet</InputLabel>
             <Box width={"100%"} sx={{
