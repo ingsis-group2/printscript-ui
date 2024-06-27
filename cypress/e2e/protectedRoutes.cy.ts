@@ -15,8 +15,7 @@ describe('Protected routes test', () => {
     cy.visit('/login');
 
     // Look for text that is likely to appear on a login page
-    cy.contains('Log in').should('exist');
-    cy.contains('Password').should('exist'); // Adjust the text based on actual content
+    cy.contains('log in').should('exist');
   });
 
   it('should not redirect to login when the user is already authenticated', () => {

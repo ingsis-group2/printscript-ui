@@ -1,7 +1,6 @@
 import {AppBar, Box, Button, Container, Toolbar, Typography} from "@mui/material";
 import {Code, Rule} from "@mui/icons-material";
 import {ReactNode} from "react";
-import {useAuth0} from "@auth0/auth0-react";
 import {useLocation, useNavigate} from "react-router-dom";
 import Profile from "./Profile.tsx";
 
@@ -23,7 +22,6 @@ const pages: PageType[] = [{
 }];
 
 export const Navbar = () => {
-    const { isAuthenticated, loginWithRedirect } = useAuth0();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -66,29 +64,7 @@ export const Navbar = () => {
                             </Button>
                         ))}
                     </Box>
-                    {isAuthenticated ? (
-                        <>
-                            <Profile />
-                        </>
-                    ) : (
-                        <Button
-                            id={"login-button"}
-                            onClick={() => loginWithRedirect()}
-                            sx={{
-                                my: 2,
-                                color: 'white',
-                                display: 'flex',
-                                justifyContent: "center",
-                                gap: "4px",
-                                backgroundColor: 'primary.light',
-                                "&:hover": {
-                                    backgroundColor: 'primary.dark'
-                                }
-                            }}
-                        >
-                            Log In
-                        </Button>
-                    )}
+                    <Profile />
                 </Toolbar>
             </Container>
         </AppBar>

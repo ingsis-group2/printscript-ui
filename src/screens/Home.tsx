@@ -8,7 +8,6 @@ import {useGetSnippets} from "../utils/queries.tsx";
 import {usePaginationContext} from "../contexts/paginationContext.tsx";
 import useDebounce from "../hooks/useDebounce.ts";
 import {useAuth0} from "@auth0/auth0-react";
-import LockedContent from "../components/common/LockedContent.tsx";
 
 const HomeScreen = () => {
   const {id: paramsId} = useParams<{ id: string }>();
@@ -17,7 +16,7 @@ const HomeScreen = () => {
   const [snippetId, setSnippetId] = useState<number | null>(null)
   const {page, count, handleChangeCount} = usePaginationContext()
   const {data, isLoading} = useGetSnippets(page, snippetName);
-  const { isAuthenticated, isLoading: isLoadingAuth} = useAuth0();
+  const { isLoading: isLoadingAuth} = useAuth0();
 
 
   useEffect(() => {
@@ -59,18 +58,11 @@ const HomeScreen = () => {
 
   return (
       <>
-          { isAuthenticated ? (
-              <>
                 <SnippetTable loading={isLoading} handleClickSnippet={setSnippetId} snippets={data?.snippets}
                                   handleSearchSnippet={handleSearchSnippet}/>
                 <Drawer open={!!snippetId} anchor={"right"} onClose={handleCloseModal}>
                     {snippetId && <SnippetDetail handleCloseModal={handleCloseModal} id={snippetId}/>}
                 </Drawer>
-              </>
-          ) : (
-              <LockedContent contentName={"Snippets"}/>
-              )
-          }
       </>
   )
 }
