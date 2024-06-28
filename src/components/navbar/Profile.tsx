@@ -15,7 +15,7 @@ const Profile = () => {
                         authorizationParams: { audience: AUTH0_AUDIENCE },
                     });
                     localStorage.setItem('accessToken', accessToken);
-                    //console.log(accessToken);
+                    console.log(accessToken);
                 } catch (e: unknown) {
                     console.error(e);
                 }

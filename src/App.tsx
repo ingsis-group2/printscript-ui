@@ -4,16 +4,22 @@ import {createBrowserRouter} from "react-router-dom";
 import HomeScreen from "./screens/Home.tsx";
 import {QueryClient, QueryClientProvider} from "react-query";
 import RulesScreen from "./screens/Rules.tsx";
+import ProtectedRoute from "./components/route/ProtectedRoute.tsx";
+import LoginScreen from "./screens/LoginScreen.tsx";
 
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <HomeScreen/>
+        element: <ProtectedRoute><HomeScreen/></ProtectedRoute>
     },
     {
         path: '/rules',
-        element: <RulesScreen/>
+        element: <ProtectedRoute><RulesScreen/></ProtectedRoute>
+    },
+    {
+        path: '/login',
+        element: <LoginScreen/>
     }
 ]);
 

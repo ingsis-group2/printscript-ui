@@ -1,8 +1,8 @@
-import {Snippet} from "../utils/snippet.ts";
+import {PaginatedSnippets, Snippet} from "../utils/snippet.ts";
 import {Rule} from "../types/Rule.ts";
 
 export class Adapter{
-    adaptSnippetCreateResponse(data: any): Snippet{
+    adaptSnippet(data: any): Snippet{
         return {
             id: data.id,
             name: data.name,
@@ -37,4 +37,22 @@ export class Adapter{
         }, {});
     }
 
+    adaptPaginatedSnippets(data: any, page: number, snippetName?: string) : PaginatedSnippets {
+        const snippets: Snippet[] = data.map((snippet: any) => this.adaptSnippet(snippet))
+        if (snippetName) {
+            return {
+                snippets: snippets.filter(snippet => snippet.name.includes(snippetName)),
+                count: snippets.length,
+                page: page,
+                page_size: 10
+            }
+        } else {
+            return {
+                snippets: snippets,
+                count: snippets.length,
+                page: page,
+                page_size: 10
+            }
+        }
+    }
 }

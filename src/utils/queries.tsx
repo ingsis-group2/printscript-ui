@@ -8,9 +8,17 @@ import {SnippetService} from "../service/snippetService.ts";
 
 const snippetOperations: SnippetOperations = new SnippetService()
 
-export const useGetSnippets = (page: number = 0, pageSize: number = 10, snippetName?: string) => {
-  return useQuery<PaginatedSnippets, Error>(['listSnippets', page,pageSize,snippetName], () => snippetOperations.listSnippetDescriptors(page, pageSize,snippetName));
+export const useGetSnippets = (page: number = 0, snippetName?: string) => {
+  return useQuery<PaginatedSnippets, Error>(['listSnippets', page,snippetName], () => snippetOperations.listSnippetDescriptors(page, snippetName));
 };
+
+export const useGetSharedSnippets = (page: number = 0, snippetName?: string) => {
+  return useQuery<PaginatedSnippets, Error>(['listSharedSnippets', page,snippetName], () => snippetOperations.listSharedSnippetDescriptors(page, snippetName));
+}
+
+export const useGetAllSnippets = (page: number = 0, snippetName?: string) => {
+  return useQuery(['listAllSnippets', page,snippetName], () => snippetOperations.listAllSnippetDescriptors(page, snippetName));
+}
 
 export const useGetSnippetById = (id: number) => {
   return useQuery<Snippet | undefined, Error>(['snippet', id], () => snippetOperations.getSnippetById(id), {
@@ -116,8 +124,8 @@ export type ExecutionResult = {
 }
 
 export const useExecuteSnippet = () => {
-  return useMutation<ExecutionResult, Error, { content: string; version: string; inputs: string[] }>(
-      ({ content, version, inputs }) => snippetOperations.executeSnippet(content, version, inputs)
+  return useMutation<ExecutionResult, Error, { snippetId: number; version: string; inputs: string[] }>(
+      ({ snippetId, version, inputs }) => snippetOperations.executeSnippet(snippetId, version, inputs)
   );
 }
 
@@ -127,8 +135,8 @@ export type FormatterOutput = {
 }
 
 export const useFormatSnippet = () => {
-  return useMutation<FormatterOutput, Error, { content: string; version: string }>(
-      ({ content, version }) => snippetOperations.formatSnippet(content, version)
+  return useMutation<FormatterOutput, Error, { snippetId: number, version: string }>(
+      ({ snippetId, version }) => snippetOperations.formatSnippet(snippetId, version)
   );
 }
 

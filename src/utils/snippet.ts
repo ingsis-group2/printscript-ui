@@ -25,18 +25,6 @@ export type Snippet = CreateSnippet & {
   id: number
 } & SnippetStatus
 
-// data class SnippetDTO(
-//     val id: Long,
-//     val writer: String,
-//     val name: String,
-//     val language: String,
-//     val extension: String,
-//     val readers: List<String>,
-//     val content: String,
-//     val creationDate: LocalDateTime,
-//     val updateDate: LocalDateTime?,
-// )
-
 type SnippetStatus = {
   compliance: ComplianceEnum;
   author: string;

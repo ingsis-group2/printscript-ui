@@ -5,7 +5,11 @@ import {FileType} from "../types/FileType.ts";
 import {Rule} from "../types/Rule.ts";
 
 export interface SnippetOperations {
-  listSnippetDescriptors(page: number,pageSize: number,sippetName?: string): Promise<PaginatedSnippets>
+  listSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets>
+
+  listSharedSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets>
+
+  listAllSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets>
 
   getSnippetById(id: number): Promise<Snippet | undefined>
 
@@ -34,9 +38,9 @@ export interface SnippetOperations {
   modifyLintingRule(newRules: Rule[]): Promise<Rule[]>
 
   //done
-  executeSnippet(content: string, version: string, inputs: string[]): Promise<ExecutionResult>
+  executeSnippet(snippetId: number, version: string, inputs: string[]): Promise<ExecutionResult>
 
-  formatSnippet(content: string, version: string): Promise<FormatterOutput>
+  formatSnippet(snippetId: number, version: string): Promise<FormatterOutput>
 
   createSnippet(createSnippet: CreateSnippet): Promise<Snippet>
 

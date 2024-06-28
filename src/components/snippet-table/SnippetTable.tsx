@@ -25,6 +25,7 @@ import {useGetFileTypes} from "../../utils/queries.tsx";
 type SnippetTableProps = {
   handleClickSnippet: (id: number) => void;
   snippets?: Snippet[];
+  sharedSnippets?: Snippet[];
   loading: boolean;
   handleSearchSnippet: (snippetName: string) => void;
 }
@@ -44,7 +45,7 @@ export const SnippetTable = (props: SnippetTableProps) => {
   const handleLoadSnippet = async (target: EventTarget & HTMLInputElement) => {
     const files = target.files
     if (!files || !files.length) {
-      createSnackbar('error',"Please select at leat one file")
+      createSnackbar('error',"Please select at least one file")
       return
     }
     const file = files[0]
@@ -121,7 +122,7 @@ export const SnippetTable = (props: SnippetTableProps) => {
             )
           }
           </TableBody>
-          <TablePagination count={count} page={page} rowsPerPage={pageSize}
+          <TablePagination count={count < 10 ? count : -1} page={page} rowsPerPage={pageSize}
                            onPageChange={(_, page) => handleGoToPage(page)}
                            onRowsPerPageChange={e => handleChangePageSize(Number(e.target.value))}/>
         </Table>

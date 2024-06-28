@@ -4,4 +4,4 @@ export type Pagination = {
   count: number
 }
 
-export const paginationParams = (page: number,pageSize: number) => `page=${page}&page_size=${pageSize}`
+export const paginationParams = (page: number) => `page=${page}`
