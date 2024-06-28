@@ -14,6 +14,7 @@ const adapter = new Adapter();
 
 export class SnippetService implements SnippetOperations {
   async listSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets> {
+    console.log(BACKEND_URL)
     const response = await axiosInstance.get(`${BACKEND_URL}/snippet/byWriter?page=${page}`);
     return adapter.adaptPaginatedSnippets(response.data, page, snippetName);
   }
