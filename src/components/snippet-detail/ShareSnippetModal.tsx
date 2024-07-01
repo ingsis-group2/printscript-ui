@@ -1,45 +1,55 @@
-import { Box, Button, Divider, TextField, Typography } from "@mui/material";
-import { ModalWrapper } from "../common/ModalWrapper.tsx";
-import { useState } from "react";
+import {Autocomplete, Box, Button, Divider, TextField, Typography} from "@mui/material";
+import {ModalWrapper} from "../common/ModalWrapper.tsx";
+import {useGetUsers} from "../../utils/queries.tsx";
+import {useEffect, useState} from "react";
+import {User} from "../../utils/users.ts";
 
 type ShareSnippetModalProps = {
-  open: boolean
-  onClose: () => void
-  onShare: (userEmail: string) => void
-  loading: boolean
+    open: boolean
+    onClose: () => void
+    onShare: (userId: string) => void
+    loading: boolean
 }
-
 export const ShareSnippetModal = (props: ShareSnippetModalProps) => {
-  const { open, onClose, onShare, loading } = props
-  const [email, setEmail] = useState("")
+    const {open, onClose, onShare, loading} = props
+    const [name, setName] = useState("")
+    const [debouncedName, setDebouncedName] = useState("")
+    const {data, isLoading} = useGetUsers(debouncedName, 1, 5)
+    const [selectedUser, setSelectedUser] = useState<User | undefined>()
 
-  function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setEmail(event.target.value)
-  }
+    useEffect(() => {
+        const getData = setTimeout(() => {
+            setDebouncedName(name)
+        }, 3000)
+        return () => clearTimeout(getData)
+    }, [name])
 
-  return (
-      <ModalWrapper open={open} onClose={onClose}>
-        <Typography variant={"h5"}>Share your snippet</Typography>
-        <Divider />
-        <Box mt={2}>
-          <TextField
-              label="User's Email"
-              value={email}
-              onChange={handleEmailChange}
-              fullWidth
-          />
-          <Box mt={4} display={"flex"} width={"100%"} justifyContent={"flex-end"}>
-            <Button onClick={onClose} variant={"outlined"}>Cancel</Button>
-            <Button
-                disabled={!email || loading}
-                onClick={() => onShare(email)}
-                sx={{ marginLeft: 2 }}
-                variant={"contained"}
-            >
-              Share
-            </Button>
-          </Box>
-        </Box>
-      </ModalWrapper>
-  )
+    function handleSelectUser(newValue: User | null) {
+        newValue && setSelectedUser(newValue)
+    }
+
+    return (
+        <ModalWrapper open={open} onClose={onClose}>
+            <Typography variant={"h5"}>Share your snippet</Typography>
+            <Divider/>
+            <Box mt={2}>
+                <Autocomplete
+                    renderInput={(params) => <TextField {...params} label="Type the user's name"/>}
+                    options={data?.users ?? []}
+                    isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                    }
+                    getOptionLabel={(option) => option.name}
+                    loading={isLoading}
+                    value={selectedUser}
+                    onInputChange={(_: unknown, newValue: string | null) => newValue && setName(newValue)}
+                    onChange={(_: unknown, newValue: User | null) => handleSelectUser(newValue)}
+                />
+                <Box mt={4} display={"flex"} width={"100%"} justifyContent={"flex-end"}>
+                    <Button onClick={onClose} variant={"outlined"}>Cancel</Button>
+                    <Button disabled={!selectedUser || loading} onClick={() => selectedUser && onShare(selectedUser?.email)} sx={{marginLeft: 2}} variant={"contained"}>Share</Button>
+                </Box>
+            </Box>
+        </ModalWrapper>
+    )
 }

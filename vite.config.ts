@@ -19,14 +19,5 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: 5173
     },
-    server: {
-      proxy: {
-        '/api': {
-          target: 'http://localhost:8081',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-        }
-      }
-    },
   }
 });

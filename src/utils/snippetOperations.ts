@@ -3,6 +3,7 @@ import {TestCase} from "../types/TestCase.ts";
 import {ExecutionResult, FormatterOutput, TestCaseResult} from "./queries.tsx";
 import {FileType} from "../types/FileType.ts";
 import {Rule} from "../types/Rule.ts";
+import {PaginatedUsers} from "./users.ts";
 
 export interface SnippetOperations {
   listSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets>
@@ -21,11 +22,11 @@ export interface SnippetOperations {
 
   getLintingRules(): Promise<Rule[]>
 
-  getTestCases(): Promise<TestCase[]>
+  getTestCases(snippetId: number): Promise<TestCase[]>
 
-    postTestCase(testCase: Partial<TestCase>): Promise<TestCase>
+  postTestCase(testCase: Partial<TestCase>, snippetId: number, version: string): Promise<TestCase>
 
-  removeTestCase(id: number): Promise<number>
+  removeTestCase(id: string): Promise<string>
 
   deleteSnippet(id: number): Promise<number>
 
@@ -37,11 +38,12 @@ export interface SnippetOperations {
 
   modifyLintingRule(newRules: Rule[]): Promise<Rule[]>
 
-  //done
   executeSnippet(snippetId: number, version: string, inputs: string[]): Promise<ExecutionResult>
 
   formatSnippet(snippetId: number, version: string): Promise<FormatterOutput>
 
   createSnippet(createSnippet: CreateSnippet): Promise<Snippet>
+
+  getUsers(name: string, page: number, pageSize: number): Promise<PaginatedUsers>
 
 }

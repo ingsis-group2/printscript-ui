@@ -1,5 +1,7 @@
 import {PaginatedSnippets, Snippet} from "../utils/snippet.ts";
 import {Rule} from "../types/Rule.ts";
+import {PaginatedUsers, User} from "../utils/users.ts";
+import {TestCase} from "../types/TestCase.ts";
 
 export class Adapter{
     adaptSnippet(data: any): Snippet{
@@ -9,14 +11,25 @@ export class Adapter{
             language: data.language,
             extension: data.extension,
             content: data.content,
-            author: data.writer,
+            author: {
+                name: data.user.username,
+                id: data.user.id,
+                email: data.user.email
+            },
             compliance: 'pending'
+        }
+    }
+
+    adaptUser(data: any): User{
+        return {
+            name: data.username,
+            id: data.id,
+            email: data.email
         }
     }
 
     adaptRules(data: any): Rule[]{
         const rules: Rule[] = []
-        console.log(data)
         for (const [key, value] of Object.entries(data)) {
             rules.push({
                 id: key,
@@ -55,4 +68,66 @@ export class Adapter{
             }
         }
     }
+
+    adaptPaginatedUsers(data: any, page: number, pageSize: number, name: string): PaginatedUsers {
+        const users: User[] = data.map((user: any) => this.adaptUser(user))
+        if (name) {
+            return {
+                users: users.filter(user => user.name.includes(name)),
+                count: users.length,
+                page: page,
+                page_size: pageSize
+            }
+        } else {
+            return {
+                users: users,
+                count: users.length,
+                page: page,
+                page_size: pageSize
+            }
+        }
+    }
+
+    adaptTestCase(data: any, snippetId: number): TestCase | undefined {
+        if (snippetId === data.snippetId) {
+            return {
+                id: data.id,
+                name: data.name,
+                input: data.inputs,
+                output: data.output,
+                envVars: this.adaptOperationsEnvVars(data.envs),
+            };
+        }
+        return undefined;
+    }
+
+    adaptTestCases(data: any, snippetId: number): TestCase[] {
+        return data
+            .map((testCase: any) => this.adaptTestCase(testCase, snippetId))
+            .filter((testCase: TestCase | undefined): testCase is TestCase => testCase !== undefined);
+    }
+
+
+    // Converts 'ENV1=123;ENV2=456' to { ENV1: '123', ENV2: '456' }
+    adaptUiEnvVars(data: string | undefined): { [key: string]: any } {
+        if (!data) return {};
+        return data.split(';').reduce((acc: { [key: string]: any }, curr: string) => {
+            const [key, value] = curr.split('=');
+            if (key) {
+                acc[key] = value;
+            }
+            return acc;
+        }, {});
+    }
+
+    // Converts { ENV1: '123', ENV2: '456' } to 'ENV1=123;ENV2=456'
+    adaptOperationsEnvVars(data: { [key: string]: any }): string {
+        return Object.entries(data)
+            .map(([key, value]) => `${key}=${value}`)
+            .join(';');
+    }
+
+
+
+
 }

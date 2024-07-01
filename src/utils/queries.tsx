@@ -5,6 +5,7 @@ import {TestCase} from "../types/TestCase.ts";
 import {FileType} from "../types/FileType.ts";
 import {Rule} from "../types/Rule.ts";
 import {SnippetService} from "../service/snippetService.ts";
+import {PaginatedUsers} from "./users.ts";
 
 const snippetOperations: SnippetOperations = new SnippetService()
 
@@ -41,28 +42,31 @@ export const useUpdateSnippetById = ({onSuccess}: {onSuccess: () => void}): UseM
   );
 };
 
+export const useGetUsers = (name: string = "", page: number = 0, pageSize: number = 10) => {
+  return useQuery<PaginatedUsers, Error>(['users', name, page, pageSize], () => snippetOperations.getUsers(name, page, pageSize));
+};
 
 export const useShareSnippet = () => {
-  return useMutation<Snippet, Error, { snippetId: number; userId: string }>(
-      ({snippetId, userId}) => snippetOperations.shareSnippet(snippetId, userId)
+  return useMutation<Snippet, Error, { snippetId: number; userEmail: string }>(
+      ({snippetId, userEmail}) => snippetOperations.shareSnippet(snippetId, userEmail)
   );
 };
 
 
-export const useGetTestCases = () => {
-  return useQuery<TestCase[] | undefined, Error>(['testCases'], () => snippetOperations.getTestCases(), {});
+export const useGetTestCases = (snippetId: number) => {
+  return useQuery<TestCase[] | undefined, Error>(['testCases'], () => snippetOperations.getTestCases(snippetId), {});
 };
 
 
-export const usePostTestCase = () => {
+export const usePostTestCase = (snippetId: number, version: string) => {
   return useMutation<TestCase, Error, Partial<TestCase>>(
-      (tc) => snippetOperations.postTestCase(tc)
+      (tc) => snippetOperations.postTestCase(tc, snippetId, version)
   );
 };
 
 
-export const useRemoveTestCase = ({onSuccess}: {onSuccess: () => void}) => {
-  return useMutation<number, Error, number>(
+export const useRemoveTestCase = ({onSuccess}: { onSuccess: () => void }) => {
+  return useMutation<string, Error, string>(
       ['removeTestCase'],
       (id) => snippetOperations.removeTestCase(id),
       {

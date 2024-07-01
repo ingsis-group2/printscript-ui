@@ -1,5 +1,5 @@
 export type TestCase = {
-    id: number;
+    id: string;
     name: string;
     input?: string[];
     output?: string[];

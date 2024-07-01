@@ -48,6 +48,12 @@ const FormattingRulesList = () => {
     setRules(newRules);
   };
 
+  function formatRuleName(name: string){
+    const words = name.split(/(?=[A-Z])/);
+    words[0] = words[0].charAt(0).toUpperCase() + words[0].slice(1);
+    return words.join(' ');
+  }
+
   return (
     <Card style={{padding: 16, margin: 16}}>
       <Typography variant={"h6"}>Formatting rules</Typography>
@@ -67,7 +73,7 @@ const FormattingRulesList = () => {
                 disableRipple
                 onChange={toggleRule(rule)}
               />
-              <ListItemText primary={rule.name} />
+              <ListItemText primary={formatRuleName(rule.name)} />
               {typeof rule.value === 'number' ?
                 (<TextField
                   type="number"
