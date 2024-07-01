@@ -1,5 +1,6 @@
 import {Pagination} from "./pagination.ts";
 import {FileType} from "../types/FileType.ts";
+import {User} from "./users.ts";
 
 export type ComplianceEnum =
     'pending' |
@@ -27,8 +28,9 @@ export type Snippet = CreateSnippet & {
 
 type SnippetStatus = {
   compliance: ComplianceEnum;
-  author: string;
+  author: User;
 }
+
 export type PaginatedSnippets = Pagination & {
   snippets: Snippet[]
 }

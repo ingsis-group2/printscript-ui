@@ -36,7 +36,6 @@ const HomeScreen = () => {
     if (data?.count && data.count != count) {
       handleChangeCount(data.count)
     }
-    console.log(data)
   }, [count, data?.count, handleChangeCount]);
 
 
