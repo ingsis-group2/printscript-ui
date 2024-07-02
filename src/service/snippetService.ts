@@ -59,7 +59,6 @@ export class SnippetService implements SnippetOperations {
         pageSize
       }
     });
-    console.log(response.data)
     return adapter.adaptPaginatedUsers(response.data, page, pageSize, name);
   }
 
@@ -128,10 +127,6 @@ export class SnippetService implements SnippetOperations {
         language: 'PrintScript',
         extension: 'ps',
       },
-      {
-        language: 'JavaScript',
-        extension: 'js',
-      }
     ]
   }
 
