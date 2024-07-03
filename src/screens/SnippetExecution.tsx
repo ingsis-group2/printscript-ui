@@ -4,6 +4,8 @@ import { highlight, languages } from "prismjs";
 import Editor from "react-simple-code-editor";
 import { useExecuteSnippet } from "../utils/queries.tsx";
 import { Snippet } from "../utils/snippet.ts";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export const SnippetExecution = ({ runSnippet, snippet, version } : { runSnippet: boolean, snippet?: Snippet, version: string }) => {
     const [input, setInput] = useState<string>("");
@@ -16,6 +18,7 @@ export const SnippetExecution = ({ runSnippet, snippet, version } : { runSnippet
             setOutput(executionResult.outputs);
             if (executionResult.errors.length) {
                 console.error("Errors:", executionResult.errors);
+                toast.error(`Execution failed: ${executionResult.errors.join(", ")}`);
             }
         }
     }, [executionResult]);
@@ -47,6 +50,7 @@ export const SnippetExecution = ({ runSnippet, snippet, version } : { runSnippet
 
     return (
         <>
+            <ToastContainer />
             <Box flex={1} overflow={"none"} minHeight={200} bgcolor={'black'} color={'white'}>
                 <Editor
                     value={code}

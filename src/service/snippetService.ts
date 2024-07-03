@@ -1,4 +1,3 @@
-import {FakeSnippetOperations} from "../utils/mock/fakeSnippetOperations.ts";
 import {SnippetOperations} from "../utils/snippetOperations.ts";
 import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from "../utils/snippet.ts";
 import {Rule} from "../types/Rule.ts";
@@ -8,8 +7,8 @@ import {FileType} from "../types/FileType.ts";
 import axiosInstance from "./axios.ts";
 import {Adapter} from "./adapter.ts";
 import {BACKEND_URL} from "../utils/constants.ts";
+import {PaginatedUsers} from "../utils/users.ts";
 
-const fakeOperations = new FakeSnippetOperations();
 const adapter = new Adapter();
 
 export class SnippetService implements SnippetOperations {
@@ -23,10 +22,10 @@ export class SnippetService implements SnippetOperations {
     return adapter.adaptPaginatedSnippets(response.data, page, snippetName);
   }
 
-    async listAllSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets> {
-        const response = await axiosInstance.get(`${BACKEND_URL}/snippet/byReaderAndWriter?page=${page}`);
-        return adapter.adaptPaginatedSnippets(response.data, page, snippetName);
-    }
+  async listAllSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets> {
+    const response = await axiosInstance.get(`${BACKEND_URL}/snippet/byReaderAndWriter?page=${page}`);
+    return adapter.adaptPaginatedSnippets(response.data, page, snippetName);
+  }
 
   async getSnippetById(id: number): Promise<Snippet | undefined> {
     const response = await axiosInstance.get(`${BACKEND_URL}/snippet/${id}`);
@@ -38,32 +37,74 @@ export class SnippetService implements SnippetOperations {
     return adapter.adaptSnippet(this.getSnippetById(id));
   }
 
-  shareSnippet(snippetId: number): Promise<Snippet> {
-    return fakeOperations.shareSnippet(snippetId);
+  async shareSnippet(snippetId: number, userEmail: string): Promise<Snippet> {
+    await axiosInstance.post(
+        `${BACKEND_URL}/snippet/addReader`,
+        null,
+        {
+          params: {
+            readerMail: userEmail,
+            snippetId: snippetId
+          }
+        }
+    );
+    // @ts-ignore
+    return await this.getSnippetById(snippetId)!;
+  }
+
+  async getUsers(name: string, page: number, pageSize: number): Promise<PaginatedUsers> {
+    const response = await axiosInstance.get(`${BACKEND_URL}/user`, {
+      params: {
+        page,
+        pageSize
+      }
+    });
+    return adapter.adaptPaginatedUsers(response.data, page, pageSize, name);
   }
 
   async getFormatRules(): Promise<Rule[]> {
     const response = await axiosInstance.get(`${BACKEND_URL}/rules/format`);
-    console.log(response)// Log headers from response
     return adapter.adaptRules(response.data)
   }
 
   async getLintingRules(): Promise<Rule[]> {
     const response = await axiosInstance.get(`${BACKEND_URL}/rules/lint`);
-    console.log(response);
     return adapter.adaptRules(response.data);
   }
 
-  getTestCases(): Promise<TestCase[]> {
-    return fakeOperations.getTestCases();
+  async getTestCases(snippetId: number): Promise<TestCase[]> {
+    const response = await axiosInstance.get(`${BACKEND_URL}/testCase`);
+    return adapter.adaptTestCases(response.data, snippetId);
   }
 
-  postTestCase(testCase: Partial<TestCase>): Promise<TestCase> {
-    return fakeOperations.postTestCase(testCase);
+  async postTestCase(testCase: Partial<TestCase>, snippetId: number, version: string): Promise<TestCase> {
+    // Convert string to map for request
+    const adaptedEnvVars = adapter.adaptUiEnvVars(testCase.envVars);
+
+    const response = await axiosInstance.post(`${BACKEND_URL}/testCase`, {
+      name: testCase.name,
+      snippetId,
+      version,
+      inputs: testCase.input,
+      envs: adaptedEnvVars, // Send map
+      output: testCase.output,
+    });
+
+    // Convert map to string for response
+    const adaptedResponseEnvVars = adapter.adaptOperationsEnvVars(response.data.envs);
+
+    return {
+      id: response.data.id,
+      name: response.data.name,
+      input: response.data.inputs,
+      output: response.data.output,
+      envVars: adaptedResponseEnvVars,
+    };
   }
 
-  removeTestCase(id: number): Promise<number> {
-    return fakeOperations.removeTestCase(id);
+  async removeTestCase(id: string): Promise<string> {
+    await axiosInstance.delete(`${BACKEND_URL}/testCase/${id}`);
+    return id
   }
 
   async deleteSnippet(id: number): Promise<number> {
@@ -71,9 +112,9 @@ export class SnippetService implements SnippetOperations {
     return id;
   }
 
-  testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult> {
-    console.log(testCase);
-    return fakeOperations.testSnippet();
+  async testSnippet(testCase: Partial<TestCase>): Promise<TestCaseResult> {
+    const response = await axiosInstance.post(`${BACKEND_URL}/runner/test/${testCase.id}`, {version:"1.1"})
+    return response.data ? "success" : "fail";
   }
 
   async getFileTypes(): Promise<FileType[]> {
@@ -86,10 +127,6 @@ export class SnippetService implements SnippetOperations {
         language: 'PrintScript',
         extension: 'ps',
       },
-      {
-        language: 'JavaScript',
-        extension: 'js',
-      }
     ]
   }
 
@@ -109,19 +146,16 @@ export class SnippetService implements SnippetOperations {
 
   async executeSnippet(snippetId: number, version: string, inputs: string[]): Promise<ExecutionResult> {
     const response = await axiosInstance.post(`${BACKEND_URL}/runner/execute/${snippetId}`, {version, inputs})
-    console.log(response);
     return response.data;
   }
 
   async formatSnippet(snippetId: number, version: string): Promise<FormatterOutput> {
     const response = await axiosInstance.post(`${BACKEND_URL}/runner/format/${snippetId}`, {version});
-    console.log(response);
     return response.data;
   }
 
   async createSnippet(createSnippet: CreateSnippet): Promise<Snippet> {
     const response = await axiosInstance.post(`${BACKEND_URL}/snippet`, createSnippet);
-    console.log(response);
     return adapter.adaptSnippet(response.data);
   }
 }
