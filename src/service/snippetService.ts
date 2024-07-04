@@ -1,5 +1,5 @@
 import {SnippetOperations} from "../utils/snippetOperations.ts";
-import {CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from "../utils/snippet.ts";
+import {ComplianceEnum, CreateSnippet, PaginatedSnippets, Snippet, UpdateSnippet} from "../utils/snippet.ts";
 import {Rule} from "../types/Rule.ts";
 import {TestCase} from "../types/TestCase.ts";
 import {ExecutionResult, FormatterOutput, TestCaseResult} from "../utils/queries.tsx";
@@ -27,14 +27,20 @@ export class SnippetService implements SnippetOperations {
     return adapter.adaptPaginatedSnippets(response.data, page, snippetName);
   }
 
-  async getSnippetById(id: number): Promise<Snippet | undefined> {
-    const response = await axiosInstance.get(`${BACKEND_URL}/snippet/${id}`);
-    return adapter.adaptSnippet(response.data);
+  async getSnippetStatus(snippetId: number): Promise<ComplianceEnum> {
+    const response = await axiosInstance.get(`${BACKEND_URL}/snippet/status/${snippetId}`);
+    return response.data.status;
   }
 
-  async updateSnippetById(id: number, updateSnippet: UpdateSnippet): Promise<Snippet> {
+  async getSnippetById(id: number): Promise<Snippet | undefined> {
+    const response = await axiosInstance.get(`${BACKEND_URL}/snippet/${id}`);
+    const status = await this.getSnippetStatus(id);
+    return adapter.adaptSnippet(response.data, status);
+  }
+
+  async updateSnippetById(id: number, updateSnippet: UpdateSnippet): Promise<Snippet | undefined> {
     await axiosInstance.put(`${BACKEND_URL}/snippet/${id}`, updateSnippet);
-    return adapter.adaptSnippet(this.getSnippetById(id));
+    return this.getSnippetById(id);
   }
 
   async shareSnippet(snippetId: number, userEmail: string): Promise<Snippet> {
@@ -156,6 +162,6 @@ export class SnippetService implements SnippetOperations {
 
   async createSnippet(createSnippet: CreateSnippet): Promise<Snippet> {
     const response = await axiosInstance.post(`${BACKEND_URL}/snippet`, createSnippet);
-    return adapter.adaptSnippet(response.data);
+    return adapter.adaptSnippet(response.data, 'pending');
   }
 }

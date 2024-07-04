@@ -14,7 +14,7 @@ export interface SnippetOperations {
 
   getSnippetById(id: number): Promise<Snippet | undefined>
 
-  updateSnippetById(id: number, updateSnippet: UpdateSnippet): Promise<Snippet>
+  updateSnippetById(id: number, updateSnippet: UpdateSnippet): Promise<Snippet | undefined>
 
   shareSnippet(snippetId: number,userId: string): Promise<Snippet>
 
