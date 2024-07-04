@@ -10,7 +10,7 @@ import {PaginatedUsers} from "../utils/users.ts";
 
 const adapter = new Adapter();
 
-const BACKEND_URL = "https://tista-dev.duckdns.org/api/operations/";
+const BACKEND_URL = "https://tista-dev.duckdns.org/api/operations";
 
 export class SnippetService implements SnippetOperations {
   async listSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets> {
