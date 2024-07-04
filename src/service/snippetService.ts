@@ -6,10 +6,11 @@ import {ExecutionResult, FormatterOutput, TestCaseResult} from "../utils/queries
 import {FileType} from "../types/FileType.ts";
 import axiosInstance from "./axios.ts";
 import {Adapter} from "./adapter.ts";
-import {BACKEND_URL} from "../utils/constants.ts";
 import {PaginatedUsers} from "../utils/users.ts";
 
 const adapter = new Adapter();
+
+const BACKEND_URL = "https://tista-dev.duckdns.org/api/operations/";
 
 export class SnippetService implements SnippetOperations {
   async listSnippetDescriptors(page: number, snippetName?: string): Promise<PaginatedSnippets> {
