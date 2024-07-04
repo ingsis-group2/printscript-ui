@@ -1,10 +1,13 @@
-import {PaginatedSnippets, Snippet} from "../utils/snippet.ts";
-import {Rule} from "../types/Rule.ts";
-import {PaginatedUsers, User} from "../utils/users.ts";
-import {TestCase} from "../types/TestCase.ts";
+import {ComplianceEnum, PaginatedSnippets, Snippet} from "../utils/snippet.ts";
+import { Rule } from "../types/Rule.ts";
+import { PaginatedUsers, User } from "../utils/users.ts";
+import { TestCase } from "../types/TestCase.ts";
+import axiosInstance from "./axios.ts";
+import {BACKEND_URL} from "../utils/constants.ts";
 
-export class Adapter{
-    adaptSnippet(data: any): Snippet{
+export class Adapter {
+    adaptSnippet(data: any, status: ComplianceEnum): Snippet {
+        console.log(status)
         return {
             id: data.id,
             name: data.name,
@@ -16,11 +19,11 @@ export class Adapter{
                 id: data.user.id,
                 email: data.user.email
             },
-            compliance: 'pending'
+            compliance: status
         }
     }
 
-    adaptUser(data: any): User{
+    adaptUser(data: any): User {
         return {
             name: data.username,
             id: data.id,
@@ -28,7 +31,7 @@ export class Adapter{
         }
     }
 
-    adaptRules(data: any): Rule[]{
+    adaptRules(data: any): Rule[] {
         const rules: Rule[] = []
         for (const [key, value] of Object.entries(data)) {
             rules.push({
@@ -50,8 +53,12 @@ export class Adapter{
         }, {});
     }
 
-    adaptPaginatedSnippets(data: any, page: number, snippetName?: string) : PaginatedSnippets {
-        const snippets: Snippet[] = data.map((snippet: any) => this.adaptSnippet(snippet))
+    async adaptPaginatedSnippets(data: any, page: number, snippetName?: string): Promise<PaginatedSnippets> {
+        const snippets: Snippet[] = await Promise.all(data.map(async (snippet: any) => {
+            const status = await this.getSnippetStatus(snippet.id);
+            return this.adaptSnippet(snippet, status);
+        }));
+
         if (snippetName) {
             return {
                 snippets: snippets.filter(snippet => snippet.name.includes(snippetName)),
@@ -69,8 +76,13 @@ export class Adapter{
         }
     }
 
+    async getSnippetStatus(snippetId: number): Promise<ComplianceEnum> {
+        const response = await axiosInstance.get(`${BACKEND_URL}/snippet/status/${snippetId}`);
+        return response.data.status;
+    }
+
     adaptPaginatedUsers(data: any, page: number, pageSize: number, name: string): PaginatedUsers {
-        const users: User[] = data.map((user: any) => this.adaptUser(user))
+        const users: User[] = data.map((user: any) => this.adaptUser(user));
         if (name) {
             return {
                 users: users.filter(user => user.name.includes(name)),
@@ -107,8 +119,6 @@ export class Adapter{
             .filter((testCase: TestCase | undefined): testCase is TestCase => testCase !== undefined);
     }
 
-
-    // Converts 'ENV1=123;ENV2=456' to { ENV1: '123', ENV2: '456' }
     adaptUiEnvVars(data: string | undefined): { [key: string]: any } {
         if (!data) return {};
         return data.split(';').reduce((acc: { [key: string]: any }, curr: string) => {
@@ -120,14 +130,9 @@ export class Adapter{
         }, {});
     }
 
-    // Converts { ENV1: '123', ENV2: '456' } to 'ENV1=123;ENV2=456'
     adaptOperationsEnvVars(data: { [key: string]: any }): string {
         return Object.entries(data)
             .map(([key, value]) => `${key}=${value}`)
             .join(';');
     }
-
-
-
-
 }

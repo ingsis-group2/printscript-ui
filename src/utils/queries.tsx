@@ -31,11 +31,11 @@ export const useCreateSnippet = ({onSuccess}: {onSuccess: () => void}): UseMutat
   return useMutation<Snippet, Error, CreateSnippet>(createSnippet => snippetOperations.createSnippet(createSnippet), {onSuccess});
 };
 
-export const useUpdateSnippetById = ({onSuccess}: {onSuccess: () => void}): UseMutationResult<Snippet, Error, {
+export const useUpdateSnippetById = ({onSuccess}: {onSuccess: () => void}): UseMutationResult<Snippet | undefined, Error, {
   id: number;
   updateSnippet: UpdateSnippet
 }> => {
-  return useMutation<Snippet, Error, { id: number; updateSnippet: UpdateSnippet }>(
+  return useMutation<Snippet | undefined, Error, { id: number; updateSnippet: UpdateSnippet }>(
       ({id, updateSnippet}) => snippetOperations.updateSnippetById(id, updateSnippet),{
         onSuccess,
     }
